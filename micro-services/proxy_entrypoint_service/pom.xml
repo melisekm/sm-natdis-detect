@@ -14,7 +14,7 @@
 	<name>ProxyEntryPoint</name>
 	<description>Entry point for system for early detection of natural disasters from social networks</description>
 	<properties>
-		<java.version>19</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>

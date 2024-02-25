@@ -1,5 +1,6 @@
 package com.pep.ProxyEntryPoint.model.entity;
 
+import com.pep.ProxyEntryPoint.model.IID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -1,5 +1,6 @@
 package com.pep.ProxyEntryPoint.model.entity;
 
+import com.pep.ProxyEntryPoint.model.IID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +27,7 @@ import java.time.LocalDate;
 @FieldNameConstants
 @SuperBuilder
 @Accessors(chain = true)
-public class Prediction {
+public class Prediction implements IID<Long> {
 
     @Id
     @EqualsAndHashCode.Include
@@ -49,4 +50,14 @@ public class Prediction {
 
     @Column(name = "updated_at")
     private LocalDate updatedAt;
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
