@@ -1,5 +1,6 @@
 package com.pep.ProxyEntryPoint.model.entity;
 
+import com.pep.ProxyEntryPoint.model.IID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @FieldNameConstants
 @SuperBuilder
 @Accessors(chain = true)
-public class InternalUser {
+public class InternalUser implements IID<Long> {
 
     @Id
     @EqualsAndHashCode.Include
@@ -38,4 +39,14 @@ public class InternalUser {
 
     @Column(name = "keycloak_id")
     private String keycloakId;
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

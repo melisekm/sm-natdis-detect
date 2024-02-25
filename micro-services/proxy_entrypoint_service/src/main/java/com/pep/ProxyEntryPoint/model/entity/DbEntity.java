@@ -1,5 +1,6 @@
 package com.pep.ProxyEntryPoint.model.entity;
 
+import com.pep.ProxyEntryPoint.model.IID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,7 +30,7 @@ import java.time.LocalDate;
 @FieldNameConstants
 @SuperBuilder
 @Accessors(chain = true)
-public class DbEntity {
+public class DbEntity implements IID<Long> {
 
     @Id
     @EqualsAndHashCode.Include
@@ -52,4 +53,14 @@ public class DbEntity {
 
     @Column(name = "created_at")
     private LocalDate createdAt;
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
