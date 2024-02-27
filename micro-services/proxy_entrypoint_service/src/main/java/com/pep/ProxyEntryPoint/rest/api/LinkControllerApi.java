@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LinkControllerApi {
@@ -140,6 +141,32 @@ public interface LinkControllerApi {
             produces = {"application/json"}
     )
     default ResponseEntity<Void> deleteLink(@PathVariable Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @Operation(
+            operationId = "findAllLinks",
+            tags = {"Link"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Služba vrátila všetky linky", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Nesprávny vstup.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Žiadateľ služby nie je autorizovaný.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "403", description = "Operácia zamietnutá.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    @PostMapping(
+            value = "/links",
+            produces = {"application/json"}
+    )
+    default ResponseEntity<List<LinkOutput>> findAllLinks() {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

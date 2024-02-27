@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Log4j2
 @RestController
 public class LinkController extends AbstractController<LinkInput, LinkOutput, Link, Long> implements LinkControllerApi {
@@ -17,6 +19,37 @@ public class LinkController extends AbstractController<LinkInput, LinkOutput, Li
     @Autowired
     public LinkController(LinkService linkService) {
         super(linkService);
+    }
+
+    private static final String ERROR_CREATE = "Error creating link";
+    private static final String ERROR_GET = "Error getting link";
+    private static final String ERROR_DELETE = "Error deleting link";
+    private static final String ERROR_UPDATE = "Error updating link";
+    private static final String ERROR_ALL = "Error getting all links";
+
+    @Override
+    protected String getErrorEntityCreate() {
+        return ERROR_CREATE;
+    }
+
+    @Override
+    protected String getErrorEntityGet() {
+        return ERROR_GET;
+    }
+
+    @Override
+    protected String getErrorEntityDelete() {
+        return ERROR_DELETE;
+    }
+
+    @Override
+    protected String getErrorEntityUpdate() {
+        return ERROR_UPDATE;
+    }
+
+    @Override
+    protected String getErrorEntityAll() {
+        return ERROR_ALL;
     }
 
     @Override
@@ -37,5 +70,10 @@ public class LinkController extends AbstractController<LinkInput, LinkOutput, Li
     @Override
     public ResponseEntity<Void> deleteLink(Long id) {
         return super.delete(id);
+    }
+
+    @Override
+    public ResponseEntity<List<LinkOutput>> findAllLinks() {
+        return super.findAll();
     }
 }
