@@ -1,0 +1,7 @@
+clean-text[gpl]
+emoji<2.0.0
+torch
+transformers
+fastapi
+pydantic
+uvicorn
