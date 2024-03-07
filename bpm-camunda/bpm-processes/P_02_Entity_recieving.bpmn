@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_071g1eb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.14.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:collaboration id="Collaboration_1uk1ded">
+    <bpmn:participant id="Participant_0pc47qq" name="SM-NATDIS-DETECT" processRef="EntityRecieving" />
+    <bpmn:participant id="Participant_1susnnf" name="NER service" />
+    <bpmn:messageFlow id="Flow_1ataylt" sourceRef="Activity_0c2wu1w" targetRef="Participant_1susnnf" />
+  </bpmn:collaboration>
+  <bpmn:process id="EntityRecieving" name="P_SS_CR_06_01_Test_start_06" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_0qsm96e">
+      <bpmn:lane id="Lane_17qo38y" name="Proxy endpoint">
+        <bpmn:flowNodeRef>Event_17yzurg</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0c2wu1w</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0mqdxdw</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0ogbi7l</bpmn:flowNodeRef>
+        <bpmn:childLaneSet id="LaneSet_00kei9h">
+          <bpmn:lane id="Lane_0ylq0gp">
+            <bpmn:flowNodeRef>Event_17yzurg</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Activity_0c2wu1w</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Activity_0mqdxdw</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Event_0ogbi7l</bpmn:flowNodeRef>
+          </bpmn:lane>
+        </bpmn:childLaneSet>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="Flow_0apduer" sourceRef="Event_17yzurg" targetRef="Activity_0c2wu1w" />
+    <bpmn:startEvent id="Event_17yzurg" name="Start">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="end">
+          <camunda:script scriptFormat="javascript" />
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_0apduer</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0iy8ckw" sourceRef="Activity_0c2wu1w" targetRef="Activity_0mqdxdw" />
+    <bpmn:serviceTask id="Activity_0c2wu1w" name="Get entities from NER service" camunda:asyncBefore="true">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+                <camunda:entry key="Authorization">Bearer ${token.prop("token").stringValue()}</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="url">${SPIS_INT_API_URL}/cislaPodnikov/naplnenieCiselnejMnoziny</camunda:inputParameter>
+            <camunda:inputParameter name="payload">{
+  "processInstanceId": "${execution.processInstanceId}",
+  "cislaPodnikovIds": "${cislaPodnikovIds}",
+  "kodSablony": "SAB_SS_OSČ_09"
+}</camunda:inputParameter>
+            <camunda:outputParameter name="restResponse">#{response}</camunda:outputParameter>
+            <camunda:outputParameter name="statusCode">#{statusCode}</camunda:outputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+        <camunda:executionListener event="end">
+          <camunda:script scriptFormat="javascript">if(statusCode != 200){
+  throw new java.lang.Exception("Chyba služby! Status code " + statusCode + " response: " + restResponse);
+}</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0apduer</bpmn:incoming>
+      <bpmn:outgoing>Flow_0iy8ckw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0mqdxdw" name="Save entities from NER service" camunda:asyncBefore="true">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+                <camunda:entry key="Authorization">Bearer ${token.prop("token").stringValue()}</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="url">${SPIS_INT_API_URL}/cislaPodnikov/naplnenieCiselnejMnoziny</camunda:inputParameter>
+            <camunda:inputParameter name="payload">{
+  "processInstanceId": "${execution.processInstanceId}",
+  "cislaPodnikovIds": "${cislaPodnikovIds}",
+  "kodSablony": "SAB_SS_OSČ_09"
+}</camunda:inputParameter>
+            <camunda:outputParameter name="restResponse">#{response}</camunda:outputParameter>
+            <camunda:outputParameter name="statusCode">#{statusCode}</camunda:outputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+        <camunda:executionListener event="end">
+          <camunda:script scriptFormat="javascript">if(statusCode != 200){
+  throw new java.lang.Exception("Chyba služby! Status code " + statusCode + " response: " + restResponse);
+}</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0iy8ckw</bpmn:incoming>
+      <bpmn:outgoing>Flow_0w0gocp</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_1slqb59">
+        <bpmn:targetRef>DataStoreReference_1lsim2f</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0w0gocp" sourceRef="Activity_0mqdxdw" targetRef="Event_0ogbi7l" />
+    <bpmn:endEvent id="Event_0ogbi7l" name="End">
+      <bpmn:incoming>Flow_0w0gocp</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataStoreReference id="DataStoreReference_1lsim2f" name="DB" />
+  </bpmn:process>
+  <bpmn:message id="Message_0v0f2h7" name="Message_0v0f2h7" />
+  <bpmn:message id="Message_1pjkk9q" name="Message_1pjkk9q" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1uk1ded">
+      <bpmndi:BPMNShape id="BPMNShape_1qk9yab" bpmnElement="Participant_0pc47qq" isHorizontal="true">
+        <dc:Bounds x="129" y="79" width="741" height="361" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0y1ta0b" bpmnElement="Lane_17qo38y" isHorizontal="true">
+        <dc:Bounds x="159" y="79" width="711" height="361" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0ylq0gp_di" bpmnElement="Lane_0ylq0gp" isHorizontal="true">
+        <dc:Bounds x="189" y="79" width="681" height="361" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0v05r8t_di" bpmnElement="Event_17yzurg">
+        <dc:Bounds x="242" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="249" y="275" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_16fw7o6" bpmnElement="Activity_0c2wu1w">
+        <dc:Bounds x="370" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0jlmni5" bpmnElement="Activity_0mqdxdw">
+        <dc:Bounds x="520" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ogbi7l_di" bpmnElement="Event_0ogbi7l">
+        <dc:Bounds x="692" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="208" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_1lsim2f_di" bpmnElement="DataStoreReference_1lsim2f">
+        <dc:Bounds x="545" y="365" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="562" y="422" width="16" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0apduer_di" bpmnElement="Flow_0apduer">
+        <di:waypoint x="278" y="250" />
+        <di:waypoint x="370" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0iy8ckw_di" bpmnElement="Flow_0iy8ckw">
+        <di:waypoint x="470" y="250" />
+        <di:waypoint x="520" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0w0gocp_di" bpmnElement="Flow_0w0gocp">
+        <di:waypoint x="620" y="250" />
+        <di:waypoint x="692" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_1susnnf_di" bpmnElement="Participant_1susnnf" isHorizontal="true">
+        <dc:Bounds x="129" y="470" width="741" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ataylt_di" bpmnElement="Flow_1ataylt">
+        <di:waypoint x="420" y="290" />
+        <di:waypoint x="420" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_1slqb59_di" bpmnElement="DataOutputAssociation_1slqb59">
+        <di:waypoint x="570" y="290" />
+        <di:waypoint x="570" y="365" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
