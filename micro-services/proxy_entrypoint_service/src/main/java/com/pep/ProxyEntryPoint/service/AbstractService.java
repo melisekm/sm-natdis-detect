@@ -74,4 +74,9 @@ public abstract class AbstractService<I, O, E extends IID<ID>, ID> {
         List<E> entities = entityRepository.findAll();
         return abstractConverter.convertToOutputList(entities);
     }
+
+    @Transactional
+    public E findEntityById(ID id) throws Exception {
+        return entityRepository.findEntityById(id);
+    }
 }

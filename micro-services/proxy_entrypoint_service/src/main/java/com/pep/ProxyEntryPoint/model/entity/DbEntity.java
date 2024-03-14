@@ -44,7 +44,7 @@ public class DbEntity implements IID<Long> {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prediciton_id")
+    @JoinColumn(name = "prediction_id")
     private Prediction prediction;
 
     @ManyToOne(fetch = FetchType.LAZY)

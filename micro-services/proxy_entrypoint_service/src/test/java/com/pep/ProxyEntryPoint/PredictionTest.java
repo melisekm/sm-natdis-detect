@@ -45,4 +45,16 @@ class PredictionTest {
         assertEquals(savedPrediction.getPredictionText(), predictionOutput.getPredictionText());
         assertEquals(savedPrediction.getRating(), predictionOutput.getRating());
     }
+
+    @Test
+    @Transactional
+    void ratePrediction() {
+        PredictionOutput predictionOutput = predictionController.ratePrediction(savedPrediction.getId(), true);
+        assertNotNull(predictionOutput);
+
+        assertEquals(savedPrediction.getInformative(), predictionOutput.getInformative());
+        assertEquals(savedPrediction.getConfidence(), predictionOutput.getConfidence());
+        assertEquals(savedPrediction.getPredictionText(), predictionOutput.getPredictionText());
+        assertEquals(true, predictionOutput.getRating());
+    }
 }
