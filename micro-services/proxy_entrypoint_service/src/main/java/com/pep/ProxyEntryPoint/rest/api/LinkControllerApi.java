@@ -2,6 +2,7 @@ package com.pep.ProxyEntryPoint.rest.api;
 
 import com.pep.ProxyEntryPoint.rest.dto.LinkInput;
 import com.pep.ProxyEntryPoint.rest.dto.LinkOutput;
+import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,31 +28,20 @@ public interface LinkControllerApi {
         return Optional.empty();
     }
 
-    /**
-     * POST /link
-     * Služba vytvorí záznam v link tabulke.
-     *
-     * @param linkInput (required)
-     * @return Služba úspešne vytvorila záznam v číslach podnikov a vrátila detail. (status code 200)
-     * or Nesprávny vstup. (status code 400)
-     * or Žiadateľ služby nie je autorizovaný. (status code 401)
-     * or Operácia zamietnutá. (status code 403)
-     * or Neočakavaná chyba aplikácie. (status code 200)
-     */
     @Operation(
             operationId = "createLink",
             tags = {"Link"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Služba úspešne vytvorila záznam v čislovacom plane.", content = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = LinkOutput.class))
                     }),
-                    @ApiResponse(responseCode = "400", description = "Nesprávny vstup.", content = {
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "401", description = "Žiadateľ služby nie je autorizovaný.", content = {
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "403", description = "Operácia zamietnutá.", content = {
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     })
             }
@@ -69,16 +59,16 @@ public interface LinkControllerApi {
             operationId = "getLink",
             tags = {"Link"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Služba úspešne vratila link", content = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = LinkOutput.class))
                     }),
-                    @ApiResponse(responseCode = "400", description = "Nesprávny vstup.", content = {
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "401", description = "Žiadateľ služby nie je autorizovaný.", content = {
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "403", description = "Operácia zamietnutá.", content = {
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     })
             }
@@ -95,16 +85,16 @@ public interface LinkControllerApi {
             operationId = "updateLink",
             tags = {"Link"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Služba úspešne updatla link", content = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = LinkOutput.class))
                     }),
-                    @ApiResponse(responseCode = "400", description = "Nesprávny vstup.", content = {
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "401", description = "Žiadateľ služby nie je autorizovaný.", content = {
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "403", description = "Operácia zamietnutá.", content = {
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     })
             }
@@ -122,16 +112,16 @@ public interface LinkControllerApi {
             operationId = "deleteLink",
             tags = {"Link"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Služba úspešne vymazala link", content = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))
                     }),
-                    @ApiResponse(responseCode = "400", description = "Nesprávny vstup.", content = {
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "401", description = "Žiadateľ služby nie je autorizovaný.", content = {
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "403", description = "Operácia zamietnutá.", content = {
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     })
             }
@@ -148,16 +138,16 @@ public interface LinkControllerApi {
             operationId = "findAllLinks",
             tags = {"Link"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Služba vrátila všetky linky", content = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))
                     }),
-                    @ApiResponse(responseCode = "400", description = "Nesprávny vstup.", content = {
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "401", description = "Žiadateľ služby nie je autorizovaný.", content = {
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "403", description = "Operácia zamietnutá.", content = {
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     })
             }

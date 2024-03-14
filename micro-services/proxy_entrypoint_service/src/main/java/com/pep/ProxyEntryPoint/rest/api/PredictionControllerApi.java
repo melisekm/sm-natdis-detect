@@ -19,31 +19,20 @@ public interface PredictionControllerApi {
 
     String TAG = "Prediction";
 
-    /**
-     * POST /prediction
-     * Služba vytvorí záznam v prediction tabulke.
-     *
-     * @param predictionInput (required)
-     * @return Služba úspešne vytvorila záznam v prediction tabulke a vrátila detail. (status code 200)
-     * or Nesprávny vstup. (status code 400)
-     * or Žiadateľ služby nie je autorizovaný. (status code 401)
-     * or Operácia zamietnutá. (status code 403)
-     * or Neočakavaná chyba aplikácie. (status code 200)
-     */
     @Operation(
-            operationId = "createLink",
+            operationId = "createPrediction",
             tags = {TAG},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Služba úspešne vytvorila záznam v prediction tabulke.", content = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = PredictionOutput.class))
                     }),
-                    @ApiResponse(responseCode = "400", description = "Nesprávny vstup.", content = {
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "401", description = "Žiadateľ služby nie je autorizovaný.", content = {
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     }),
-                    @ApiResponse(responseCode = "403", description = "Operácia zamietnutá.", content = {
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                     })
             }
