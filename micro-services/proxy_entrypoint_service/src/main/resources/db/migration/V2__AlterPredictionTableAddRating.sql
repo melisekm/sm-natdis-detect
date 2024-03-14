@@ -1,0 +1,1 @@
+alter table prediction add column rating boolean;

@@ -40,7 +40,7 @@ public class Prediction implements IID<Long> {
 
     @NotNull
     @Column(name = "confidence")
-    private Float confidence;
+    private Double confidence;
 
     @Column(name = "prediction_text")
     private String predictionText;
@@ -50,6 +50,9 @@ public class Prediction implements IID<Long> {
 
     @Column(name = "updated_at")
     private LocalDate updatedAt;
+
+    @Column(name = "rating")
+    private Boolean rating;
 
     @Override
     public Long getId() {
