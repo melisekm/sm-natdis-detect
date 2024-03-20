@@ -1,17 +1,17 @@
-from typing import Union, List
-
+from typing import Literal
+import pydantic
 from pydantic import BaseModel
 
 
 class TextRequest(BaseModel):
-    data: Union[str, List[str]]
+    data: str | list[str]
 
 
 class PredictionResponse(BaseModel):
-    label: str
-    binary_label: int
-    confidence: float
+    label: Literal["Informative", "Not informative"]
+    binary_label: Literal[0, 1]
+    confidence: pydantic.confloat(ge=0, le=1)
 
 
 class ProcessingResponse(BaseModel):
-    processed_text: Union[str, List[str]]
+    processed_text: str | list[str]

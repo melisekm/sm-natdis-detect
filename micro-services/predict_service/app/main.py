@@ -7,7 +7,12 @@ from app import get_path
 from app.model import NaturalDisBert
 from app.routes import router
 
-app = FastAPI()
+app = FastAPI(
+    title="AASS Predict Service",
+    description="Predicts whetever the social media "
+                "post is informative in regards to natural disasters",
+    version="0.1.0",
+)
 
 app.include_router(router)
 

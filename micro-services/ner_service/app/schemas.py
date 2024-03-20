@@ -1,10 +1,10 @@
-from typing import Union, List, Dict
-
 from pydantic import BaseModel, Field
+
+from app.examples import ner_examples
 
 
 class TextRequest(BaseModel):
-    data: Union[str, List[str]]
+    data: str | list[str]
 
 
 class AnnotatedEntityResponse(BaseModel):
@@ -14,6 +14,12 @@ class AnnotatedEntityResponse(BaseModel):
 
 
 class NERResponse(BaseModel):
-    ents: List[AnnotatedEntityResponse] = Field(default_factory=list)
-    html_highlight: str
-    groups: Dict[str, List[str]] = Field(default_factory=dict)
+    ents: list[AnnotatedEntityResponse] = Field(default_factory=list)
+    html_highlight: str | None = None
+    groups: dict[str, list[str]] = Field(default_factory=dict)
+
+    model_config = {
+        'json_schema_extra': {
+            'examples': ner_examples
+        }
+    }

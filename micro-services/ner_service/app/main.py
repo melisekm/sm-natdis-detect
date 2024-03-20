@@ -6,7 +6,11 @@ from fastapi import FastAPI
 from app.model import NER
 from app.routes import router
 
-app = FastAPI()
+app = FastAPI(
+    title="AASS Named Entity Recognition Service",
+    description="Extracts named entities from text",
+    version="0.1.0",
+)
 
 app.include_router(router)
 

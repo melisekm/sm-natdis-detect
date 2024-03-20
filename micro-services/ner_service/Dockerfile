@@ -2,7 +2,7 @@ FROM python:3.11
 
 COPY requirements.txt requirements.txt
 
-RUN pip install -r requirements.txt --no-cache-dir 
+RUN pip install -r requirements.txt --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu
 RUN python3 -m spacy download en_core_web_trf --no-cache-dir
 
 COPY app /workspace/app
