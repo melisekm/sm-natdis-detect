@@ -12,11 +12,11 @@ app.include_router(router)
 
 @app.on_event("startup")
 def prepare_model():
-    logging.info("Preparing model")
+    logging.info("Preparing extractor")
     Extractor()
-    logging.info("Model ready")
+    logging.info("Extractor ready")
 
 
 @app.get("/")
 def root():
-    return {"status": "Model ready"}
+    return {"status": "Extractor ready"}
