@@ -8,7 +8,7 @@ class TextRequest(BaseModel):
 
 
 class PredictionResponse(BaseModel):
-    label: Literal["Informative", "Not informative"]
+    label: Literal["Informative", "Not Informative"]
     binary_label: Literal[0, 1]
     confidence: pydantic.confloat(ge=0, le=1)
 
