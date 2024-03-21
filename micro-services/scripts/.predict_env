@@ -1,0 +1,5 @@
+# all relative to the root of the predict service
+DATA_DIR=data
+MODEL_LOCAL_PATH=naturaldisbert
+MODEL_HF_PATH=
+DEVICE=cpu

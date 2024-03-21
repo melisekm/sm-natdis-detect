@@ -1,0 +1,6 @@
+fastapi
+pydantic
+uvicorn
+spacy
+transformers
+spacy-transformers
