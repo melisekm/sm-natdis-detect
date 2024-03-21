@@ -51,4 +51,34 @@ public interface DbEntityControllerApi {
     ) {
         return new ArrayList<>();
     }
+
+    @Operation(
+            operationId = "saveEntitiesForEachLink",
+            tags = {TAG},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    @PostMapping(
+            value = "/entity/saveEntities/{predictionId}",
+            produces = {"application/json"},
+            consumes = {"application/json"}
+    )
+    default List<DbEntityOutput> saveEntitiesForEachLink(
+            @PathVariable("predictionId") Long predictionId,
+            @RequestBody @Valid DbEntitySaveEntitiesInputList input
+    ) {
+        return new ArrayList<>();
+    }
 }

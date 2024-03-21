@@ -3,6 +3,7 @@ package com.pep.ProxyEntryPoint.controller;
 import com.pep.ProxyEntryPoint.exception.DefaultException;
 import com.pep.ProxyEntryPoint.model.entity.Prediction;
 import com.pep.ProxyEntryPoint.rest.api.PredictionControllerApi;
+import com.pep.ProxyEntryPoint.rest.dto.PredictionGetPredictionInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
 import com.pep.ProxyEntryPoint.service.PredictionService;
@@ -59,6 +60,15 @@ public class PredictionController extends AbstractController<PredictionInput, Pr
     public PredictionOutput ratePrediction(Long id, Boolean rating) {
         try {
             return predictionService.ratePrediction(id, rating);
+        } catch (Exception e) {
+            throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
+        }
+    }
+
+    @Override
+    public PredictionOutput getPredictionFromPredictService(PredictionGetPredictionInput input) {
+        try {
+            return predictionService.getPredictionFromPredictService(input);
         } catch (Exception e) {
             throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
         }
