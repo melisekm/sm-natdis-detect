@@ -1,0 +1,39 @@
+services:
+  predict_service:
+    container_name: predict_service
+    build: 
+      context: ../predict_service
+      dockerfile: Dockerfile
+    ports:
+      - ${PREDICT_SERVICE_PORT_EXPOSE:-8010}:8000
+    env_file:
+      - .predict_env
+    volumes:
+      - ../predict_service:/workspace
+
+  ner_service:
+    container_name: ner_service
+    build:
+      context: ../ner_service
+      dockerfile: Dockerfile
+    ports:
+      - ${NER_SERVICE_PORT_EXPOSE:-8011}:8000
+    env_file:
+      - .ner_env
+    volumes:
+      - ../ner_service:/workspace
+
+  dl_service:
+    container_name: dl_service
+    build:
+      context: ../dl_service
+      dockerfile: Dockerfile
+    ports:
+      - ${DL_SERVICE_PORT_EXPOSE:-8012}:8000
+    volumes:
+      - ../dl_service:/workspace
+
+networks:
+  default:
+    name: aass_network
+    external: true
