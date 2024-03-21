@@ -19,7 +19,7 @@ It should contain one folder called `naturaldisbert` and this folder has to cont
 mv /path/to/naturaldisbert micro-services/predict_service/data/models
 cd micro-services/scripts
 cp .env.example .env  # Setup environment variables. e.g. ports as needed
-docker compose -f fastapi-docker-compose.yaml up
+docker compose -f fastapi-docker-compose.yaml up -d
 ```
 This will create 3 microservices under one docker compose. They are already connected to the external`aass_network` network. Build time is based on what is already cached, so estimate atleast 5 - 10 minutes.
 
