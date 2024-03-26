@@ -1,0 +1,16 @@
+{% load custom_tags %}
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+
+        {% block form %}{% endblock %}
+
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        {% block nav_links_ul %}
+            <ul class="sidebar-menu">
+                {% block nav_links %}
+                {% endblock nav_links %}
+            </ul>
+        {% endblock nav_links_ul %}
+    </section>
+</aside>

@@ -1,0 +1,45 @@
+{% extends "_layout.html" %}
+{% load i18n static %}
+
+{% block body_class %}login-page{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="valign-wrapper center-align" style="height: 100vh">
+            <div class="row" style="width: 50%; margin: auto">
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-content black-text">
+                            <span class="card-title">Sign in</span>
+                            {% block login_form %}
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    {% if message %}
+                                        <p class="no-margin" style="color: red;">{{ message }}</p>
+                                    {% endif %}
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input id="username" name="username" type="text" class="validate">
+                                            <label for="username">Username</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input id="password" name="password" type="password" class="validate">
+                                            <label for="password">Password</label>
+                                        </div>
+                                    </div>
+                                    <button class="btn waves-effect waves-light" type="submit" name="action">Login
+                                        <i class="material-icons right">login</i>
+                                    </button>
+                                </form>
+                            {% endblock login_form %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

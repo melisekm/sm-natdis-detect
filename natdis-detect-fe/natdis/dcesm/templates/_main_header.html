@@ -1,0 +1,18 @@
+{% load custom_tags %}
+{#{% logged_user as current_user %}#}
+<header class="main-header">
+
+    <!-- Header Navbar: style can be found in header.less -->
+    {% block nav_bar %}
+        <nav class="nav-wrapper light-blue">
+            <a href="{% url 'predict' %}" class="brand-logo">Detection of Natural Disasters from Social Media
+                <i class="material-icons navbar-icon">flood</i></a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="{% url 'predict' %}">Predict</a></li>
+                <li><a href="{% url 'entities' %}">Get entities</a></li>
+                <li><a href="{% url 'predictions' %}">Historical Predictions</a></li>
+                <li><a href="{% url 'logout' %}">Logout <i class="material-icons right navbar-icon">logout</i></a></li>
+            </ul>
+        </nav>
+    {% endblock %}
+</header>

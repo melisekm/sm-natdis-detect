@@ -1,0 +1,7 @@
+html, body, html * {
+  font-family: 'Roboto', sans-serif;
+}
+
+.navbar-icon {
+  padding: 5px;
+}
