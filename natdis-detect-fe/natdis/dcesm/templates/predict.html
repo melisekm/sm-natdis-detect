@@ -1,22 +1,30 @@
 {% extends '_layout.html' %}
-{% load static %}
 
 {% block content %}
-    <div>
-        <div class="center-align">
-            <h3>Create prediction</h3>
+    <h1 class="my-3">Create prediction</h1>
+    <form method="POST" action="">
+        <div class="row ">
+            <div class="col">
+                {% csrf_token %}
+                <label for="SocialMediaPost" class="fs-5 form-label mt-md-0 mt-3">Social Media Post Text</label>
+                <textarea required name="SocialMediaPost" class="form-control rounded-2"
+                          id="SocialMediaPost" rows="5">{{ text }}</textarea>
+            </div>
         </div>
         <div class="row">
-            <form class="col s12">
-              <div class="row">
-                <div class="input-field col s12">
-                  <textarea id="textarea1" class="materialize-textarea"></textarea>
-                  <label for="textarea1">Social Media Post</label>
-                </div>
-              </div>
-            </form>
-          </div>
-    </div>
+            <div class="col mt-3 text-center">
+                <button class="btn w-25 btn-blue">Submit</button>
+            </div>
+        </div>
+    </form>
+    {% if prediction %}
+        <div class="row mt-5">
+            <div class="col">
+                <h2 class="fs-4">Prediction Result</h2>
+                <p class="fs-5">{{ prediction }}</p>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}

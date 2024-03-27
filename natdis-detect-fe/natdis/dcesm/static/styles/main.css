@@ -1,7 +1,89 @@
 html, body, html * {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
-.navbar-icon {
-  padding: 5px;
+a {
+    color: black;
+    text-decoration: none;
+}
+
+.btn-blue {
+    background-color: #1762A7;
+    border: none;
+    color: white;
+}
+
+.btn-blue:hover, .btn-blue:focus {
+    background-color: #0a58ca;
+    color: white;
+}
+
+.darkRectangle {
+    background: #202027;
+    border-radius: 10px;
+    color: white;
+}
+
+.white-link {
+    color: white;
+    text-decoration: underline;
+}
+
+.white-link:hover {
+    color: #0a58ca;
+}
+
+.black-link {
+    text-decoration: underline;
+    color: black;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: white;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.nav-item, .navbar-brand {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.nav-link.link-dark{
+    cursor:pointer;
+}
+
+.form-rounded {
+    border-radius: 1rem;
+    border-color: #1762A7;
+    background: rgba(0, 0, 0, 0);
+    font-size: 16px;
+    color: white;
+    width: 100%;
+    height: 45px;
+}
+
+.form-rounded:focus, .form-rounded:active {
+    background: transparent;
+    color: white;
+}
+
+.background-rectangle {
+    background: #202027;
+    border-radius: 20px;
+    position: center;
+    color: #ffffff;
+}
+
+.btn-confirm {
+    width: 100%;
+    font-size: 20px;
+    border-radius: 10px;
+}
+
+textarea {
+    resize: none;
 }

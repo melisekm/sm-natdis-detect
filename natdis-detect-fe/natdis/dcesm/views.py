@@ -2,8 +2,10 @@ import logging
 
 from django.shortcuts import render, redirect
 from django.views import View
+from django.contrib import messages
 
 from dcesm.connectors.keycloak_auth import keycloak_authenticate
+from dcesm.mock_data import mock_prediction
 
 
 class Homepage(View):
@@ -23,6 +25,8 @@ class Login(View):
         opts = {}
         if 'login_message' in request.session:
             opts['message'] = request.session.pop('login_message')
+        if 'token' in request.session:
+            return redirect('predict')
         return render(request, 'login.html', opts)
 
     def post(self, request, *args, **kwargs):
@@ -53,14 +57,42 @@ class Logout(View):
         return redirect('login')
 
 
-class Predict(View):
+class CreatePrediction(View):
     def get(self, request):
         return render(request, 'predict.html')
 
+    def post(self, request):
+        payload = request.POST
+        text = payload['SocialMediaPost']
+        if isinstance(text, str):
+            text = text.strip()
+        if not text:
+            messages.error(request, 'Please enter a text to predict.')
+            return render(request, 'predict.html')
+        # prediction = self.api_client.predict(text)
+        if 'Ida' in text:
+            prediction = mock_prediction['informative']
+        else:
+            prediction = mock_prediction['non-informative']
+        return render(request, 'predict.html', {'prediction': prediction, 'text': text})
+
+
+class PredictionDetail(View):
+    def get(self, request, prediction_id):
+        # prediction = self.api_client.get_prediction(prediction_id)
+        prediction = mock_prediction
+        return render(request, 'prediction_detail.html', {'prediction': prediction})
+
 
 class Predictions(View):
-    pass
+    def get(self, request):
+        # predictions = self.api_client.get_predictions()
+        predictions = [mock_prediction]
+        return render(request, 'predictions.html', {'predictions': predictions})
 
 
-class Entities(View):
-    pass
+class CreateEntityAnnotation(View):
+    def get(self, request):
+        return render(request, 'create_entity_annotation.html')
+
+

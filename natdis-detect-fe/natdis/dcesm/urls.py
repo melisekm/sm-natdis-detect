@@ -15,18 +15,23 @@ urlpatterns = [
 
     path(
         'predict/',
-        views.Predict.as_view(),
+        views.CreatePrediction.as_view(),
         name='predict'
-    ),
-    path(
-        'entities',
-        views.Entities.as_view(),
-        name='entities'
     ),
     path(
         'predictions',
         views.Predictions.as_view(),
         name='predictions'
+    ),
+    path(
+        'predictions/<int:prediction_id>',
+        views.PredictionDetail.as_view(),
+        name='prediction_detail'
+    ),
+    path(
+        'extract_entities/',
+        views.CreateEntityAnnotation.as_view(),
+        name='extract_entities'
     ),
     path(
         'logout',

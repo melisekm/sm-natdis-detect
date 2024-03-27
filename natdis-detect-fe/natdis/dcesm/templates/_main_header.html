@@ -1,18 +1,35 @@
-{% load custom_tags %}
-{#{% logged_user as current_user %}#}
-<header class="main-header">
+{% block nav_bar %}
+    <header>
+        <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'predict' %}">
+                    <i class="fa-solid fa-house-crack"></i>
+                    <span class="mx-3 ps-1">Detection of natural disasters from social media</span>
+                    <i class="fa-solid fa-house-crack"></i>
+                </a>
+                <button id="hamburger-btn" class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#toggleMobileMenu"
+                        aria-controls="toggleMobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
 
-    <!-- Header Navbar: style can be found in header.less -->
-    {% block nav_bar %}
-        <nav class="nav-wrapper light-blue">
-            <a href="{% url 'predict' %}" class="brand-logo">Detection of Natural Disasters from Social Media
-                <i class="material-icons navbar-icon">flood</i></a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="{% url 'predict' %}">Predict</a></li>
-                <li><a href="{% url 'entities' %}">Get entities</a></li>
-                <li><a href="{% url 'predictions' %}">Historical Predictions</a></li>
-                <li><a href="{% url 'logout' %}">Logout <i class="material-icons right navbar-icon">logout</i></a></li>
-            </ul>
+                <div class="collapse navbar-collapse" id="toggleMobileMenu">
+                    <ul class="navbar-nav nav-fill w-100">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'predict' %}">Create prediction</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'extract_entities' %}">Extract entities</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'predictions' %}">Historical predictions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
-    {% endblock %}
-</header>
+    </header>
+{% endblock %}
