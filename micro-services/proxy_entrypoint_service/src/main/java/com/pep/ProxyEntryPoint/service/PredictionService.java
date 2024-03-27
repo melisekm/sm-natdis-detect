@@ -5,17 +5,20 @@ import com.pep.ProxyEntryPoint.converter.PredictionConverter;
 import com.pep.ProxyEntryPoint.model.entity.Prediction;
 import com.pep.ProxyEntryPoint.model.repository.PredictionRepository;
 import com.pep.ProxyEntryPoint.rest.dto.ApiCallInput;
-import com.pep.ProxyEntryPoint.rest.dto.PredictionGetPredictionInput;
+import com.pep.ProxyEntryPoint.rest.dto.DataInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
+import com.pep.ProxyEntryPoint.rest.dto.PredictionPredictServiceOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -24,6 +27,7 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
     private final PredictionRepository predictionRepository;
     private final PredictionConverter predictionConverter;
     private final ApiClient apiClient;
+    private final JmsTemplate jmsTemplate;
 
     @Value("${predict.service.url}")
     private String predictServiceUrl;
@@ -31,11 +35,13 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
     @Autowired
     protected PredictionService(PredictionRepository predictionRepository,
                                 PredictionConverter predictionConverter,
-                                ApiClient apiClient) {
+                                ApiClient apiClient,
+                                JmsTemplate jmsTemplate) {
         super(predictionRepository, predictionConverter);
         this.predictionRepository = predictionRepository;
         this.predictionConverter = predictionConverter;
         this.apiClient = apiClient;
+        this.jmsTemplate = jmsTemplate;
     }
 
     @Override
@@ -76,7 +82,7 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
     }
 
     @Transactional
-    public PredictionOutput getPredictionFromPredictService(PredictionGetPredictionInput input) {
+    public List<PredictionPredictServiceOutput> getPredictionFromPredictService(DataInput input) {
         ApiCallInput apiCallInput = new ApiCallInput();
         apiCallInput.setMethod(HttpMethod.POST);
         apiCallInput.setUrlPath(predictServiceUrl + "/predict");
@@ -85,6 +91,6 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
         bodyRequest.put("data", input.getData());
         apiCallInput.setBodyRequest(bodyRequest);
 
-        return apiClient.invokeApi(apiCallInput, PredictionOutput.class).getBody();
+        return apiClient.invokeApi(apiCallInput, List.class).getBody();
     }
 }

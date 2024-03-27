@@ -1,10 +1,8 @@
 package com.pep.ProxyEntryPoint.rest.api;
 
 import com.pep.ProxyEntryPoint.rest.dto.DbEntityOutput;
-import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInputList;
-import com.pep.ProxyEntryPoint.rest.dto.PredictionInput;
-import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
+import com.pep.ProxyEntryPoint.rest.dto.DataInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -53,11 +51,11 @@ public interface DbEntityControllerApi {
     }
 
     @Operation(
-            operationId = "saveEntitiesForEachLink",
+            operationId = "getEntitiesFromNER",
             tags = {TAG},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))
                     }),
                     @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -71,14 +69,13 @@ public interface DbEntityControllerApi {
             }
     )
     @PostMapping(
-            value = "/entity/saveEntities/{predictionId}",
+            value = "/entity/getFromNER",
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    default List<DbEntityOutput> saveEntitiesForEachLink(
-            @PathVariable("predictionId") Long predictionId,
-            @RequestBody @Valid DbEntitySaveEntitiesInputList input
-    ) {
-        return new ArrayList<>();
+    default Object getEntitiesFromNER(
+            @RequestBody @Valid DataInput input
+            ) {
+        return new Object();
     }
 }

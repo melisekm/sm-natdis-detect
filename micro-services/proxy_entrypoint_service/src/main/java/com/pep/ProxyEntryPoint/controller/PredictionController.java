@@ -3,14 +3,17 @@ package com.pep.ProxyEntryPoint.controller;
 import com.pep.ProxyEntryPoint.exception.DefaultException;
 import com.pep.ProxyEntryPoint.model.entity.Prediction;
 import com.pep.ProxyEntryPoint.rest.api.PredictionControllerApi;
-import com.pep.ProxyEntryPoint.rest.dto.PredictionGetPredictionInput;
+import com.pep.ProxyEntryPoint.rest.dto.DataInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
+import com.pep.ProxyEntryPoint.rest.dto.PredictionPredictServiceOutput;
 import com.pep.ProxyEntryPoint.service.PredictionService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Log4j2
 @RestController
@@ -66,7 +69,7 @@ public class PredictionController extends AbstractController<PredictionInput, Pr
     }
 
     @Override
-    public PredictionOutput getPredictionFromPredictService(PredictionGetPredictionInput input) {
+    public List<PredictionPredictServiceOutput> getPredictionFromPredictService(DataInput input) {
         try {
             return predictionService.getPredictionFromPredictService(input);
         } catch (Exception e) {

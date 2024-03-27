@@ -1,8 +1,9 @@
 package com.pep.ProxyEntryPoint.rest.api;
 
-import com.pep.ProxyEntryPoint.rest.dto.PredictionGetPredictionInput;
+import com.pep.ProxyEntryPoint.rest.dto.DataInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
+import com.pep.ProxyEntryPoint.rest.dto.PredictionPredictServiceOutput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,6 +13,9 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public interface PredictionControllerApi {
 
@@ -79,7 +83,7 @@ public interface PredictionControllerApi {
             tags = {TAG},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = PredictionOutput.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))
                     }),
                     @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -97,9 +101,9 @@ public interface PredictionControllerApi {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    default PredictionOutput getPredictionFromPredictService(
-            @RequestBody PredictionGetPredictionInput input
+    default List<PredictionPredictServiceOutput> getPredictionFromPredictService(
+            @RequestBody DataInput input
             ) {
-        return new PredictionOutput();
+        return new ArrayList<>();
     }
 }

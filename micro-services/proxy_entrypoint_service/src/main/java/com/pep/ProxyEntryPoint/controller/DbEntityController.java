@@ -5,9 +5,8 @@ import com.pep.ProxyEntryPoint.model.entity.DbEntity;
 import com.pep.ProxyEntryPoint.rest.NotUsed;
 import com.pep.ProxyEntryPoint.rest.api.DbEntityControllerApi;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntityOutput;
-import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInputList;
-import com.pep.ProxyEntryPoint.service.AbstractService;
+import com.pep.ProxyEntryPoint.rest.dto.DataInput;
 import com.pep.ProxyEntryPoint.service.DbEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,6 +56,15 @@ public class DbEntityController extends AbstractController<NotUsed, DbEntityOutp
     public List<DbEntityOutput> saveEntities(Long predictionId, DbEntitySaveEntitiesInputList input) {
         try {
             return dbEntityService.saveEntities(predictionId, input);
+        } catch (Exception e) {
+            throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityCreate(), e);
+        }
+    }
+
+    @Override
+    public Object getEntitiesFromNER(DataInput input) {
+        try {
+            return dbEntityService.getEntitiesFromNER(input);
         } catch (Exception e) {
             throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityCreate(), e);
         }

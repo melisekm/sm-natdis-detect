@@ -2,7 +2,7 @@ package com.pep.ProxyEntryPoint.rest.api;
 
 import com.pep.ProxyEntryPoint.rest.dto.LinkInput;
 import com.pep.ProxyEntryPoint.rest.dto.LinkOutput;
-import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
+import com.pep.ProxyEntryPoint.rest.dto.DataInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -159,4 +159,63 @@ public interface LinkControllerApi {
     default ResponseEntity<List<LinkOutput>> findAllLinks() {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
+
+    @Operation(
+            operationId = "getLinkCount",
+            tags = {"Link"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    @PostMapping(
+            value = "/link/getCount",
+            produces = {"application/json"},
+            consumes = {"application/json"}
+    )
+    default Object getLinkCount(
+            @RequestBody DataInput dataInput)
+    {
+        return new Object();
+    }
+
+    @Operation(
+            operationId = "downloadFromLinks",
+            tags = {"Link"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    @PostMapping(
+            value = "/link/download",
+            produces = {"application/json"},
+            consumes = {"application/json"}
+    )
+    default Object downloadFromLinks(
+            @RequestBody DataInput dataInput)
+    {
+        return new Object();
+    }
+
 }
