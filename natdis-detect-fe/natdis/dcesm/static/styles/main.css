@@ -1,5 +1,5 @@
 html, body, html * {
-  font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 a {
@@ -52,8 +52,8 @@ a {
     font-weight: 400;
 }
 
-.nav-link.link-dark{
-    cursor:pointer;
+.nav-link.link-dark {
+    cursor: pointer;
 }
 
 .form-rounded {
@@ -86,4 +86,11 @@ a {
 
 textarea {
     resize: none;
+}
+
+.prediction-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }

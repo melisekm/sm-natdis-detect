@@ -1,6 +1,8 @@
 mock_prediction = {
     'informative': {
         'id': 1,
+        'created_at': '2021-08-30T12:00:00Z',
+        'rating': 'Positive',
         'text': 'Hurricane Ida is expected to hit New York and Manhattan at 4am today. The storm is moving at 200km/h. '
                 '#StaySafe #HurricaneIda https://www.cnn.com/2021/08/30/weather/hurricane-ida-monday/index.html',
         'label': 'Informative',
@@ -87,6 +89,8 @@ mock_prediction = {
     },
     'non-informative': {
         'id': 2,
+        'rating': 'Unknown',
+        'created_at': '2022-01-05T17:22:00Z',
         'text': 'I love my dog so much. He is my best friend. #doglovers #mansbestfriend',
         'label': 'Non-Informative',
         'confidence': 0.99,

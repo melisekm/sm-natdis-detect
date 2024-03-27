@@ -29,6 +29,11 @@ urlpatterns = [
         name='prediction_detail'
     ),
     path(
+        'rate_prediction/',
+        views.RatePrediction.as_view(),
+        name='rate_prediction'
+    ),
+    path(
         'extract_entities/',
         views.CreateEntityAnnotation.as_view(),
         name='extract_entities'

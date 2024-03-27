@@ -1,8 +1,10 @@
+import json
 import logging
 
+from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from django.contrib import messages
 
 from dcesm.connectors.keycloak_auth import keycloak_authenticate
 from dcesm.mock_data import mock_prediction
@@ -86,14 +88,42 @@ class PredictionDetail(View):
             prediction = mock_prediction['non-informative']
         else:
             return render(request, '404.html')
-        return render(request, 'prediction_detail.html', {'prediction': prediction, 'detailed':True})
+        return render(request, 'prediction_detail.html', {'prediction': prediction, 'detailed': True})
+
+
+def truncate_with_ellipsis(text: str, max_len: int) -> str:
+    if len(text) > max_len:
+        return text[:max_len - 3] + "..."
+    return text
 
 
 class Predictions(View):
     def get(self, request):
         # predictions = self.api_client.get_predictions()
-        predictions = [mock_prediction]
-        return render(request, 'predictions.html', {'predictions': predictions})
+        data = [mock_prediction['informative'], mock_prediction['non-informative']]
+        res = []
+        for prediction in data:
+            res.append({
+                'id': prediction['id'],
+                'created_at': prediction['created_at'].replace('T', ' ')[:16],
+                'text': truncate_with_ellipsis(prediction['text'], 75),
+                'label': prediction['label'],
+                'confidence': prediction['confidence'],
+                'entities': sum(
+                    len(entities) for entities in prediction['entities'].values()
+                ),
+                'links': len(prediction['links']),
+            })
+        headers = [
+            'ID',
+            'Created At',
+            'Text',
+            'Label',
+            'Confidence',
+            'Entities',
+            'Links',
+        ]
+        return render(request, 'predictions.html', {'predictions': res, 'headers': headers})
 
 
 class CreateEntityAnnotation(View):
@@ -101,3 +131,9 @@ class CreateEntityAnnotation(View):
         return render(request, 'create_entity_annotation.html')
 
 
+class RatePrediction(View):
+    def post(self, request):
+        payload = json.loads(request.body.decode('utf-8'))
+        logging.info(payload)
+        # self.api_client.rate_prediction(payload['prediction_id'], payload['rating'])
+        return JsonResponse({'message': 'Prediction has been rated successfully.'})
