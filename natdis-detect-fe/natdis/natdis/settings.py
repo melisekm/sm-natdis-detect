@@ -129,14 +129,10 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'node_modules',
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 KEYCLOAK_AUTH_URL = os.getenv('KEYCLOAK_AUTH_URL')
 KEYCLOAK_CLIENT_ID = os.getenv('KEYCLOAK_CLIENT_ID')
