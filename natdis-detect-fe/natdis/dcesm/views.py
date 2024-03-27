@@ -74,14 +74,19 @@ class CreatePrediction(View):
             prediction = mock_prediction['informative']
         else:
             prediction = mock_prediction['non-informative']
-        return render(request, 'predict.html', {'prediction': prediction, 'text': text})
+        return render(request, 'predict.html', {'prediction': prediction, 'text': text, 'detailed': False})
 
 
 class PredictionDetail(View):
     def get(self, request, prediction_id):
         # prediction = self.api_client.get_prediction(prediction_id)
-        prediction = mock_prediction
-        return render(request, 'prediction_detail.html', {'prediction': prediction})
+        if prediction_id == 1:
+            prediction = mock_prediction['informative']
+        elif prediction_id == 2:
+            prediction = mock_prediction['non-informative']
+        else:
+            return render(request, '404.html')
+        return render(request, 'prediction_detail.html', {'prediction': prediction, 'detailed':True})
 
 
 class Predictions(View):

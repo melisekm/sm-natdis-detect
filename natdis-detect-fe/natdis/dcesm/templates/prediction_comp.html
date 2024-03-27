@@ -1,0 +1,133 @@
+<div class="row mt-5">
+    <div class="{% if prediction.entities %}col{% else %}col-12{% endif %}">
+        <h2>Prediction Result</h2>
+        <div class="card">
+            <div class="card-body">
+                <p class="fs-5">Label: <span
+                        class="text-decoration-underline">{{ prediction.label }}</span>
+                </p>
+                <p class="fs-5">Confidence: {{ prediction.confidence }} % </p>
+                <p>
+                    {% if prediction.label == 'Non-Informative' %}
+                        <p class="">This post is not informative, thus no further analysis is done</p>
+                    {% else %}
+                        {% if not prediction.entities %}
+                            <p class="text-danger">No named entities found</p>
+                        {% endif %}
+                    {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        {% if prediction.entities %}
+            <h2> Recognised named entities </h2>
+            <div class="card">
+                <div class="card-body">
+                    <div>
+                        Locations:
+                        {% for location in prediction.entities.locations %}
+                            <span class="badge bg-primary">{{ location }}</span>
+                        {% empty %}
+                            <span class="badge bg-secondary">No locations found</span>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        Date &amp; Time:
+                        {% for date_time in prediction.entities.date_time %}
+                            <span class="badge bg-success">{{ date_time }}</span>
+                        {% empty %}
+                            <span class="badge bg-secondary">No date &amp; time found</span>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        Entities:
+                        {% for entity in prediction.entities.entities %}
+                            <span class="badge bg-info">{{ entity }}</span>
+                        {% empty %}
+                            <span class="badge bg-secondary">No entities found</span>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        Other:
+                        {% for other_ent in prediction.entities.other %}
+                            <span class="badge bg-secondary">{{ other_ent }}</span>
+                        {% empty %}
+                            <span class="badge bg-secondary">No other entities found</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% if prediction.links %}
+    <div class="row">
+        <h2> Found articles </h2>
+        <div class="card">
+            <div class="card-body">
+                {% for article in prediction.links %}
+                    <div class="py-1">
+                        <p class="fs-5">Article {{ forloop.counter }}</p>
+                        <span>Title: <a href="{{ article.link }}" class="black-link" target="_blank">
+                            {{ article.title }} <i class="fa-solid fa-link"></i>
+                        </a>
+                        </span>
+                        <p>Published: {{ article.published_at }}</p>
+                        {% if article.has_entities %}
+                            <p class="text-success">This article contains named entities</p>
+                        {% else %}
+                            <p class="text-secondary">This article does not contain named entities</p>
+                        {% endif %}
+                        {% if detailed %}
+                            <div class="mb-3">
+                                <div>
+                                    Locations:
+                                    {% for location in article.entities.locations %}
+                                        <span class="badge bg-primary">{{ location }}</span>
+                                    {% empty %}
+                                        <span class="badge bg-secondary">No locations found</span>
+                                    {% endfor %}
+                                </div>
+                                <div>
+                                    Date &amp; Time:
+                                    {% for date_time in article.entities.date_time %}
+                                        <span class="badge bg-success">{{ date_time }}</span>
+                                    {% empty %}
+                                        <span class="badge bg-secondary">No date &amp; time found</span>
+                                    {% endfor %}
+                                </div>
+                                <div>
+                                    Entities:
+                                    {% for entity in article.entities.entities %}
+                                        <span class="badge bg-info">{{ entity }}</span>
+                                    {% empty %}
+                                        <span class="badge bg-secondary">No entities found</span>
+                                    {% endfor %}
+                                </div>
+                                <div>
+                                    Other:
+                                    {% for other_ent in article.entities.other %}
+                                        <span class="badge bg-secondary">{{ other_ent }}</span>
+                                    {% empty %}
+                                        <span class="badge bg-secondary">No other entities found</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <h5>Article Description</h5>
+                            <div class="overflow-auto" style="max-height: 200px">
+                                {% if article.description %}
+                                    <p>{{ article.description }}</p>
+                                {% else %}
+                                    <p>No description available</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        {% if not forloop.last %}
+                            <hr class="border rounded border-dark border-3 my-4">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}

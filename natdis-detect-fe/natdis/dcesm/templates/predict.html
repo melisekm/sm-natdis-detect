@@ -6,7 +6,7 @@
         <div class="row ">
             <div class="col">
                 {% csrf_token %}
-                <label for="SocialMediaPost" class="fs-5 form-label mt-md-0 mt-3">Social Media Post Text</label>
+                <label for="SocialMediaPost" class="fs-4 form-label mt-md-0 mt-3">Social Media Post Text</label>
                 <textarea required name="SocialMediaPost" class="form-control rounded-2"
                           id="SocialMediaPost" rows="5">{{ text }}</textarea>
             </div>
@@ -18,14 +18,9 @@
         </div>
     </form>
     {% if prediction %}
-        <div class="row mt-5">
-            <div class="col">
-                <h2 class="fs-4">Prediction Result</h2>
-                <p class="fs-5">{{ prediction }}</p>
-            </div>
+        {% include 'prediction_comp.html' %}
+        <div class="justify-content-center d-flex mb-3">
+            <a href="{% url 'prediction_detail' prediction.id %}" class="btn btn-primary mt-3">View Prediction</a>
         </div>
     {% endif %}
-{% endblock %}
-
-{% block scripts %}
 {% endblock %}
