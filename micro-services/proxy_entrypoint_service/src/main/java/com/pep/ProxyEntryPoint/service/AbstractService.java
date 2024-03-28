@@ -3,6 +3,8 @@ package com.pep.ProxyEntryPoint.service;
 import com.pep.ProxyEntryPoint.converter.AbstractConverter;
 import com.pep.ProxyEntryPoint.model.IID;
 import com.pep.ProxyEntryPoint.model.repository.EntityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -73,5 +75,10 @@ public abstract class AbstractService<I, O, E extends IID<ID>, ID> {
     public List<O> findAll() {
         List<E> entities = entityRepository.findAll();
         return abstractConverter.convertToOutputList(entities);
+    }
+
+    @Transactional
+    public E findEntityById(ID id) throws Exception {
+        return entityRepository.findEntityById(id);
     }
 }

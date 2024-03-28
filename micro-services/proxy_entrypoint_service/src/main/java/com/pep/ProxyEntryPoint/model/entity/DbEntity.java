@@ -40,11 +40,13 @@ public class DbEntity implements IID<Long> {
     @Column(name = "name")
     private String name;
 
-    // entity type enum
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_type_enum_key")
+    private EntityTypeEnum entityTypeEnum;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prediciton_id")
+    @JoinColumn(name = "prediction_id")
     private Prediction prediction;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,0 +1,1 @@
+alter table entity alter column entity_type_enum_key drop not null;

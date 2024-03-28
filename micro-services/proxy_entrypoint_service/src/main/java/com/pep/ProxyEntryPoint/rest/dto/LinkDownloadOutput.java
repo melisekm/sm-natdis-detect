@@ -2,21 +2,18 @@ package com.pep.ProxyEntryPoint.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class LinkInput {
+public class LinkDownloadOutput {
 
     @NotNull
     @JsonProperty("orig_url")

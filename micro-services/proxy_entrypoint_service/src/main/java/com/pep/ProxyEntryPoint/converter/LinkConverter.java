@@ -1,5 +1,7 @@
 package com.pep.ProxyEntryPoint.converter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pep.ProxyEntryPoint.rest.dto.LinkInput;
 import com.pep.ProxyEntryPoint.rest.dto.LinkOutput;
 import com.pep.ProxyEntryPoint.model.entity.Link;
@@ -10,13 +12,15 @@ public class LinkConverter extends AbstractConverter<LinkInput, LinkOutput, Link
     @Override
     public Link convertToEntity(LinkInput input) {
         Link link = new Link();
-        link.setLink(input.getLink());
-        link.setBody(input.getBody());
-        link.setRawBody(input.getRawBody());
+        link.setOriginUrl(input.getOriginUrl());
+        link.setFinalUrl(input.getFinalUrl());
+        link.setText(input.getText());
+        link.setHtml(input.getHtml());
         link.setTitle(input.getTitle());
         link.setOtherInfo(input.getOtherInfo());
+        link.setDomain(input.getDomain());
         link.setPublishedAt(input.getPublishedAt());
-        link.setCreatedAt(input.getCreatedAt());
+        link.setExtractedAt(input.getExtractedAt());
         return link;
     }
 
@@ -24,13 +28,15 @@ public class LinkConverter extends AbstractConverter<LinkInput, LinkOutput, Link
     public LinkOutput convertToOutput(Link entity) {
         LinkOutput linkOutput = new LinkOutput();
         linkOutput.setId(entity.getId());
-        linkOutput.setLink(entity.getLink());
-        linkOutput.setBody(entity.getBody());
-        linkOutput.setRawBody(entity.getRawBody());
+        linkOutput.setOriginUrl(entity.getOriginUrl());
+        linkOutput.setFinalUrl(entity.getFinalUrl());
+        linkOutput.setText(entity.getText());
+        linkOutput.setHtml(entity.getHtml());
         linkOutput.setTitle(entity.getTitle());
         linkOutput.setOtherInfo(entity.getOtherInfo());
+        linkOutput.setDomain(entity.getDomain());
         linkOutput.setPublishedAt(entity.getPublishedAt());
-        linkOutput.setCreatedAt(entity.getCreatedAt());
+        linkOutput.setExtractedAt(entity.getExtractedAt());
         return linkOutput;
     }
 }
