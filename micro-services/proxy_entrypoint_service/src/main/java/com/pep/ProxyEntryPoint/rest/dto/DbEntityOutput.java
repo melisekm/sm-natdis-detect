@@ -5,40 +5,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class LinkOutput {
+public class DbEntityOutput {
 
     @JsonProperty
     private Long id;
 
     @JsonProperty
-    private String originUrl;
+    private String name;
 
     @JsonProperty
-    private String finalUrl;
+    private String entityTypeEnumKey;
 
     @JsonProperty
-    private String text;
+    private String entityTypeEnumValue;
 
     @JsonProperty
-    private String html;
+    private Long predictionId;
 
     @JsonProperty
-    private String title;
+    private Long linkId;
 
     @JsonProperty
-    private Object otherInfo;
-
-    @JsonProperty
-    private String domain;
-
-    @JsonProperty
-    private LocalDateTime publishedAt;
-
-    @JsonProperty
-    private LocalDateTime extractedAt;
+    private LocalDate createdAt;
 }
