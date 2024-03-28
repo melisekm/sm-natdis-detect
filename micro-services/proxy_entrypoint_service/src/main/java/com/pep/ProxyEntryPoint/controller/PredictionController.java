@@ -60,7 +60,12 @@ public class PredictionController extends AbstractController<PredictionInput, Pr
     }
 
     @Override
-    public PredictionOutput ratePrediction(Long id, Boolean rating) {
+    public PredictionOutput getPrediction(Long id) {
+        return super.get(id).getBody();
+    }
+
+    @Override
+    public PredictionOutput ratePrediction(Long id, String rating) {
         try {
             return predictionService.ratePrediction(id, rating);
         } catch (Exception e) {
@@ -69,9 +74,18 @@ public class PredictionController extends AbstractController<PredictionInput, Pr
     }
 
     @Override
-    public List<PredictionPredictServiceOutput> getPredictionFromPredictService(DataInput input) {
+    public PredictionPredictServiceOutput getPredictionFromPredictService(DataInput input) {
         try {
             return predictionService.getPredictionFromPredictService(input);
+        } catch (Exception e) {
+            throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
+        }
+    }
+
+    @Override
+    public Long getFlow(String input) {
+        try {
+            return predictionService.getFlow(input);
         } catch (Exception e) {
             throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
         }

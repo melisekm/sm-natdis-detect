@@ -2,6 +2,8 @@ package com.pep.ProxyEntryPoint.controller;
 
 import com.pep.ProxyEntryPoint.exception.DefaultException;
 import com.pep.ProxyEntryPoint.rest.api.LinkControllerApi;
+import com.pep.ProxyEntryPoint.rest.dto.LinkCountOutput;
+import com.pep.ProxyEntryPoint.rest.dto.LinkDownloadOutputList;
 import com.pep.ProxyEntryPoint.rest.dto.LinkInput;
 import com.pep.ProxyEntryPoint.rest.dto.LinkOutput;
 import com.pep.ProxyEntryPoint.model.entity.Link;
@@ -83,7 +85,7 @@ public class LinkController extends AbstractController<LinkInput, LinkOutput, Li
     }
 
     @Override
-    public Object getLinkCount(DataInput input) {
+    public LinkCountOutput getLinkCount(DataInput input) {
         try {
             return linkService.getLinkCount(input);
         } catch (Exception e) {
@@ -92,9 +94,18 @@ public class LinkController extends AbstractController<LinkInput, LinkOutput, Li
     }
 
     @Override
-    public Object downloadFromLinks(DataInput input) {
+    public LinkDownloadOutputList downloadFromLinks(DataInput input) {
         try {
             return linkService.downloadFromLinks(input);
+        } catch (Exception e) {
+            throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
+        }
+    }
+
+    @Override
+    public void saveLinksToPrediction(List<LinkInput> input, Long predictionId) {
+        try {
+            linkService.saveLinksToPrediction(input, predictionId);
         } catch (Exception e) {
             throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
         }

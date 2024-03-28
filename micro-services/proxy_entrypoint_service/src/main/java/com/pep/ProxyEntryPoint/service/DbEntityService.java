@@ -1,18 +1,25 @@
 package com.pep.ProxyEntryPoint.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pep.ProxyEntryPoint.apiClient.ApiClient;
 import com.pep.ProxyEntryPoint.converter.DbEntityConverter;
 import com.pep.ProxyEntryPoint.model.entity.DbEntity;
 import com.pep.ProxyEntryPoint.model.entity.Prediction;
 import com.pep.ProxyEntryPoint.model.repository.DbEntityRepository;
+import com.pep.ProxyEntryPoint.model.repository.EntityTypeEnumRepository;
 import com.pep.ProxyEntryPoint.rest.NotUsed;
 import com.pep.ProxyEntryPoint.rest.dto.ApiCallInput;
+import com.pep.ProxyEntryPoint.rest.dto.DbEntityGetFromNerOutput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntityOutput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInputList;
 import com.pep.ProxyEntryPoint.rest.dto.DataInput;
+import com.pep.ProxyEntryPoint.rest.dto.PredictionPredictServiceOutput;
+import com.pep.ProxyEntryPoint.util.ApiClientUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,17 +38,20 @@ public class DbEntityService extends AbstractService<NotUsed, DbEntityOutput, Db
     private final DbEntityConverter dbEntityConverter;
     private final PredictionService predictionService;
     private final ApiClient apiClient;
+    private final EntityTypeEnumRepository entityTypeEnumRepository;
 
     @Autowired
     protected DbEntityService(DbEntityRepository dbEntityRepository,
                               DbEntityConverter dbEntityConverter,
-                              PredictionService predictionService,
-                              ApiClient apiClient) {
+                              @Lazy PredictionService predictionService,
+                              ApiClient apiClient,
+                              EntityTypeEnumRepository entityTypeEnumRepository) {
         super(dbEntityRepository, dbEntityConverter);
         this.dbEntityRepository = dbEntityRepository;
         this.dbEntityConverter = dbEntityConverter;
         this.predictionService = predictionService;
         this.apiClient = apiClient;
+        this.entityTypeEnumRepository = entityTypeEnumRepository;
     }
 
     @Value("${ner.service.url}")
@@ -79,7 +90,7 @@ public class DbEntityService extends AbstractService<NotUsed, DbEntityOutput, Db
 
             DbEntity dbEntity = new DbEntity();
             dbEntity.setName(entity.getName());
-//            dbEntity.setEntityTypeEnum
+            dbEntity.setEntityTypeEnum(entityTypeEnumRepository.findByKey(entity.getEntityTypeEnumKey()));
             dbEntity.setPrediction(prediction);
             dbEntity.setCreatedAt(LocalDate.now());
 
@@ -90,7 +101,7 @@ public class DbEntityService extends AbstractService<NotUsed, DbEntityOutput, Db
     }
 
     @Transactional
-    public Object getEntitiesFromNER(DataInput input) {
+    public DbEntityGetFromNerOutput getEntitiesFromNER(DataInput input) throws Exception {
         ApiCallInput apiCallInput = new ApiCallInput();
         apiCallInput.setMethod(HttpMethod.POST);
         apiCallInput.setUrlPath(nerServiceUrl + "/analyze");
@@ -98,7 +109,8 @@ public class DbEntityService extends AbstractService<NotUsed, DbEntityOutput, Db
         Map<String, Object> bodyRequest = new HashMap<>();
         bodyRequest.put("data", input.getData());
         apiCallInput.setBodyRequest(bodyRequest);
-        Object response = apiClient.invokeApi(apiCallInput, Object.class);
-        return response;
+
+        List<LinkedHashMap<String, Object>> linkedHashMapList = apiClient.invokeApi(apiCallInput, List.class).getBody();
+        return ApiClientUtils.convertLinkedHashMapToObject(linkedHashMapList, DbEntityGetFromNerOutput.class);
     }
 }

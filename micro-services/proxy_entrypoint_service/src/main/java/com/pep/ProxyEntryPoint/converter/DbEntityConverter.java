@@ -17,7 +17,8 @@ public class DbEntityConverter extends AbstractConverter<NotUsed, DbEntityOutput
         DbEntityOutput dbEntityOutput = new DbEntityOutput();
         dbEntityOutput.setId(entity.getId());
         dbEntityOutput.setName(entity.getName());
-//        dbEntityOutput.setEntityTypeEnumKey();
+        dbEntityOutput.setEntityTypeEnumKey(entity.getEntityTypeEnum().getKey());
+        dbEntityOutput.setEntityTypeEnumValue(entity.getEntityTypeEnum().getValue());
         dbEntityOutput.setPredictionId(entity.getPrediction().getId());
         dbEntityOutput.setLinkId(entity.getLink() != null ? entity.getLink().getId() : null);
         dbEntityOutput.setCreatedAt(entity.getCreatedAt());

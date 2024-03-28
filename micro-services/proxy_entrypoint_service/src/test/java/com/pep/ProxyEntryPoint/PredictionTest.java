@@ -49,7 +49,7 @@ class PredictionTest {
     @Test
     @Transactional
     void ratePrediction() {
-        PredictionOutput predictionOutput = predictionController.ratePrediction(savedPrediction.getId(), true);
+        PredictionOutput predictionOutput = predictionController.ratePrediction(savedPrediction.getId(), String.valueOf(true));
         assertNotNull(predictionOutput);
 
         assertEquals(savedPrediction.getInformative(), predictionOutput.getInformative());

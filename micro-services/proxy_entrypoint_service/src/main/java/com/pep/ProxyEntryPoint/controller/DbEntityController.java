@@ -4,6 +4,7 @@ import com.pep.ProxyEntryPoint.exception.DefaultException;
 import com.pep.ProxyEntryPoint.model.entity.DbEntity;
 import com.pep.ProxyEntryPoint.rest.NotUsed;
 import com.pep.ProxyEntryPoint.rest.api.DbEntityControllerApi;
+import com.pep.ProxyEntryPoint.rest.dto.DbEntityGetFromNerOutput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntityOutput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInputList;
 import com.pep.ProxyEntryPoint.rest.dto.DataInput;
@@ -62,7 +63,7 @@ public class DbEntityController extends AbstractController<NotUsed, DbEntityOutp
     }
 
     @Override
-    public Object getEntitiesFromNER(DataInput input) {
+    public DbEntityGetFromNerOutput getEntitiesFromNER(DataInput input) {
         try {
             return dbEntityService.getEntitiesFromNER(input);
         } catch (Exception e) {

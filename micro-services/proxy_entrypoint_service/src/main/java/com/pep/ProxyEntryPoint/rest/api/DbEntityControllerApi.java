@@ -1,5 +1,6 @@
 package com.pep.ProxyEntryPoint.rest.api;
 
+import com.pep.ProxyEntryPoint.rest.dto.DbEntityGetFromNerOutput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntityOutput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInputList;
 import com.pep.ProxyEntryPoint.rest.dto.DataInput;
@@ -55,7 +56,7 @@ public interface DbEntityControllerApi {
             tags = {TAG},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = DbEntityGetFromNerOutput.class))
                     }),
                     @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -73,9 +74,9 @@ public interface DbEntityControllerApi {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    default Object getEntitiesFromNER(
+    default DbEntityGetFromNerOutput getEntitiesFromNER(
             @RequestBody @Valid DataInput input
             ) {
-        return new Object();
+        return new DbEntityGetFromNerOutput();
     }
 }

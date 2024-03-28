@@ -15,8 +15,8 @@ public class SagaOrchestrator {
         this.linkService = linkService;
     }
 
-    @JmsListener(destination = "sagaQueue")
-    public void handleSaga(String message) {
-        System.out.println("Received message: " + message);
-    }
+//    @JmsListener(destination = "sagaQueue")
+//    public void handleSaga(String message) {
+//        System.out.println("Received message: " + message);
+//    }
 }

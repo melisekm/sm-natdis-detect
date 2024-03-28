@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -25,11 +27,17 @@ public class PredictionOutput {
     private String predictionText;
 
     @JsonProperty
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @JsonProperty
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @JsonProperty
     private Boolean rating;
+
+    @JsonProperty
+    private List<LinkOutput> links;
+
+    @JsonProperty
+    private List<DbEntityOutput> entities;
 }

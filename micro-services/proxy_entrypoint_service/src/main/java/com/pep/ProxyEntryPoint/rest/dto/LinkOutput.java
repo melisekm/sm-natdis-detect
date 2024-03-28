@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -16,23 +16,29 @@ public class LinkOutput {
     private Long id;
 
     @JsonProperty
-    private String link;
+    private String originUrl;
 
     @JsonProperty
-    private String body;
+    private String finalUrl;
 
     @JsonProperty
-    private String rawBody;
+    private String text;
+
+    @JsonProperty
+    private String html;
 
     @JsonProperty
     private String title;
 
     @JsonProperty
-    private String otherInfo;
+    private Object otherInfo;
 
     @JsonProperty
-    private LocalDate publishedAt;
+    private String domain;
 
     @JsonProperty
-    private LocalDate createdAt;
+    private LocalDateTime publishedAt;
+
+    @JsonProperty
+    private LocalDateTime extractedAt;
 }

@@ -22,6 +22,9 @@ public class DbEntityOutput {
     private String entityTypeEnumKey;
 
     @JsonProperty
+    private String entityTypeEnumValue;
+
+    @JsonProperty
     private Long predictionId;
 
     @JsonProperty

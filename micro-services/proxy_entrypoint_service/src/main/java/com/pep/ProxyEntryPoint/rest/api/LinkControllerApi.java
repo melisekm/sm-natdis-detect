@@ -1,5 +1,7 @@
 package com.pep.ProxyEntryPoint.rest.api;
 
+import com.pep.ProxyEntryPoint.rest.dto.LinkCountOutput;
+import com.pep.ProxyEntryPoint.rest.dto.LinkDownloadOutputList;
 import com.pep.ProxyEntryPoint.rest.dto.LinkInput;
 import com.pep.ProxyEntryPoint.rest.dto.LinkOutput;
 import com.pep.ProxyEntryPoint.rest.dto.DataInput;
@@ -165,7 +167,7 @@ public interface LinkControllerApi {
             tags = {"Link"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = LinkCountOutput.class))
                     }),
                     @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -183,10 +185,10 @@ public interface LinkControllerApi {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    default Object getLinkCount(
+    default LinkCountOutput getLinkCount(
             @RequestBody DataInput dataInput)
     {
-        return new Object();
+        return new LinkCountOutput();
     }
 
     @Operation(
@@ -194,7 +196,7 @@ public interface LinkControllerApi {
             tags = {"Link"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = LinkDownloadOutputList.class))
                     }),
                     @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -212,10 +214,39 @@ public interface LinkControllerApi {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    default Object downloadFromLinks(
+    default LinkDownloadOutputList downloadFromLinks(
             @RequestBody DataInput dataInput)
     {
-        return new Object();
+        return new LinkDownloadOutputList();
+    }
+
+    @Operation(
+            operationId = "saveLinksToPrediction",
+            tags = {"Link"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    @PostMapping(
+            value = "/link/saveToPrediction/{predictionId}",
+            produces = {"application/json"},
+            consumes = {"application/json"}
+    )
+    default void saveLinksToPrediction(
+            @RequestBody List<LinkInput> linkInputs,
+            @PathVariable Long predictionId)
+    {
     }
 
 }
