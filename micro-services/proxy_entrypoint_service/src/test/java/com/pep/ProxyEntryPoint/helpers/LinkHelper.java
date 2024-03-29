@@ -14,15 +14,15 @@ public class LinkHelper {
     private static final String OTHER_INFO = "otherInfo";
     private static final LocalDate DATE = LocalDate.now();
 
-    public static Link createLink() {
-        Link link = new Link();
-        link.setLink(LINK);
-        link.setBody(BODY);
-        link.setRawBody(RAW_BODY);
-        link.setTitle(TITLE);
-        link.setOtherInfo(OTHER_INFO);
-        link.setCreatedAt(DATE);
-        return link;
-    }
+//    public static Link createLink() {
+//        Link link = new Link();
+//        link.setLink(LINK);
+//        link.setBody(BODY);
+//        link.setRawBody(RAW_BODY);
+//        link.setTitle(TITLE);
+//        link.setOtherInfo(OTHER_INFO);
+//        link.setCreatedAt(DATE);
+//        return link;
+//    }
 
 }
