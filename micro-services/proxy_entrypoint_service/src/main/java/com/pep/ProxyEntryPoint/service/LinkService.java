@@ -148,7 +148,7 @@ public class LinkService extends AbstractService<LinkInput, LinkOutput, Link, Lo
     }
 
     @Transactional
-    public void saveLinksToPrediction(List<LinkInput> input, Long predictionId) throws Exception {
+    public List<LinkOutput> saveLinksToPrediction(List<LinkInput> input, Long predictionId) throws Exception {
         Prediction prediction = predictionRepository.findEntityById(predictionId);
         List<Link> links = new ArrayList<>();
         for (LinkInput linkInput : input) {
@@ -156,6 +156,7 @@ public class LinkService extends AbstractService<LinkInput, LinkOutput, Link, Lo
             link.setPredictions(List.of(prediction));
             links.add(link);
         }
-        linkRepository.saveAll(links);
+        List<Link> savedLinks = linkRepository.saveAll(links);
+        return linkConverter.convertToOutputList(savedLinks);
     }
 }

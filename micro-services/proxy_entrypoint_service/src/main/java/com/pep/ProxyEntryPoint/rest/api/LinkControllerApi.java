@@ -225,7 +225,7 @@ public interface LinkControllerApi {
             tags = {"Link"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))
                     }),
                     @ApiResponse(responseCode = "400", description = "Bad request.", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -243,10 +243,11 @@ public interface LinkControllerApi {
             produces = {"application/json"},
             consumes = {"application/json"}
     )
-    default void saveLinksToPrediction(
+    default List<LinkOutput> saveLinksToPrediction(
             @RequestBody List<LinkInput> linkInputs,
             @PathVariable Long predictionId)
     {
+        return List.of();
     }
 
 }

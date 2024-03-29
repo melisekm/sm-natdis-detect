@@ -1,13 +1,12 @@
 package com.pep.ProxyEntryPoint.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pep.ProxyEntryPoint.apiClient.ApiClient;
 import com.pep.ProxyEntryPoint.converter.DbEntityConverter;
 import com.pep.ProxyEntryPoint.model.entity.DbEntity;
 import com.pep.ProxyEntryPoint.model.entity.Prediction;
 import com.pep.ProxyEntryPoint.model.repository.DbEntityRepository;
 import com.pep.ProxyEntryPoint.model.repository.EntityTypeEnumRepository;
+import com.pep.ProxyEntryPoint.model.repository.LinkRepository;
 import com.pep.ProxyEntryPoint.rest.NotUsed;
 import com.pep.ProxyEntryPoint.rest.dto.ApiCallInput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntityGetFromNerOutput;
@@ -15,7 +14,6 @@ import com.pep.ProxyEntryPoint.rest.dto.DbEntityOutput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInputList;
 import com.pep.ProxyEntryPoint.rest.dto.DataInput;
-import com.pep.ProxyEntryPoint.rest.dto.PredictionPredictServiceOutput;
 import com.pep.ProxyEntryPoint.util.ApiClientUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,19 +37,22 @@ public class DbEntityService extends AbstractService<NotUsed, DbEntityOutput, Db
     private final PredictionService predictionService;
     private final ApiClient apiClient;
     private final EntityTypeEnumRepository entityTypeEnumRepository;
+    private final LinkRepository linkRepository;
 
     @Autowired
     protected DbEntityService(DbEntityRepository dbEntityRepository,
                               DbEntityConverter dbEntityConverter,
                               @Lazy PredictionService predictionService,
                               ApiClient apiClient,
-                              EntityTypeEnumRepository entityTypeEnumRepository) {
+                              EntityTypeEnumRepository entityTypeEnumRepository,
+                              LinkRepository linkRepository) {
         super(dbEntityRepository, dbEntityConverter);
         this.dbEntityRepository = dbEntityRepository;
         this.dbEntityConverter = dbEntityConverter;
         this.predictionService = predictionService;
         this.apiClient = apiClient;
         this.entityTypeEnumRepository = entityTypeEnumRepository;
+        this.linkRepository = linkRepository;
     }
 
     @Value("${ner.service.url}")
@@ -91,6 +92,7 @@ public class DbEntityService extends AbstractService<NotUsed, DbEntityOutput, Db
             DbEntity dbEntity = new DbEntity();
             dbEntity.setName(entity.getName());
             dbEntity.setEntityTypeEnum(entityTypeEnumRepository.findByKey(entity.getEntityTypeEnumKey()));
+            dbEntity.setLink(entity.getLinkId() != null ? linkRepository.findEntityById(entity.getLinkId()) : null);
             dbEntity.setPrediction(prediction);
             dbEntity.setCreatedAt(LocalDate.now());
 
