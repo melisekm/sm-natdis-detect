@@ -103,9 +103,9 @@ public class LinkController extends AbstractController<LinkInput, LinkOutput, Li
     }
 
     @Override
-    public void saveLinksToPrediction(List<LinkInput> input, Long predictionId) {
+    public List<LinkOutput> saveLinksToPrediction(List<LinkInput> input, Long predictionId) {
         try {
-            linkService.saveLinksToPrediction(input, predictionId);
+            return linkService.saveLinksToPrediction(input, predictionId);
         } catch (Exception e) {
             throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
         }

@@ -13,6 +13,7 @@ import com.pep.ProxyEntryPoint.rest.dto.LinkCountOutput;
 import com.pep.ProxyEntryPoint.rest.dto.LinkDownloadOutput;
 import com.pep.ProxyEntryPoint.rest.dto.LinkDownloadOutputList;
 import com.pep.ProxyEntryPoint.rest.dto.LinkInput;
+import com.pep.ProxyEntryPoint.rest.dto.LinkOutput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionPredictServiceOutput;
@@ -140,32 +141,7 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
         DbEntityGetFromNerGroups groups = dbEntityService.getEntitiesFromNER(dataInput).getGroups();
 
         // save entities to prediction
-        if (groups.getPLACE() != null) {
-            for (String place : groups.getPLACE()) {
-                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(place).entityTypeEnumKey("PLACE").build());
-            }
-        }
-        if (groups.getOTHER() != null) {
-            for (String other : groups.getOTHER()) {
-                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(other).entityTypeEnumKey("OTHER").build());
-            }
-        }
-        if (groups.getENTITY() != null) {
-            for (String entity : groups.getENTITY()) {
-                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(entity).entityTypeEnumKey("ENTITY").build());
-            }
-        }
-        if (groups.getTIME() != null) {
-            for (String time : groups.getTIME()) {
-                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(time).entityTypeEnumKey("TIME").build());
-            }
-        }
-        if (groups.getDATE() != null) {
-            for (String date : groups.getDATE()) {
-                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(date).entityTypeEnumKey("DATE").build());
-            }
-        }
-        dbEntityService.saveEntities(prediction.getId(), dbEntitySaveEntitiesInputList);
+        dbEntityService.saveEntities(prediction.getId(), setDbEntitySaveEntitiesInputList(groups, null));
 
         // get link count
         LinkCountOutput linkCountOutput = linkService.getLinkCount(dataInput);
@@ -194,8 +170,52 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
                     .build();
             linkInputList.add(linkInput);
         }
-        linkService.saveLinksToPrediction(linkInputList, prediction.getId());
+        List<LinkOutput> savedLinks = linkService.saveLinksToPrediction(linkInputList, prediction.getId());
+
+        // get entities for each link text and save
+        List<DbEntityGetFromNerGroups> dbEntityGetFromNerGroupsList = new ArrayList<>();
+        for (LinkOutput linkOutput : savedLinks) {
+            DataInput dataLinkEntitiesInput = new DataInput();
+            dataLinkEntitiesInput.setData(List.of(linkOutput.getText()));
+            DbEntityGetFromNerGroups dataLinkEntitiesOutput = dbEntityService.getEntitiesFromNER(dataLinkEntitiesInput).getGroups();
+            dbEntityGetFromNerGroupsList.add(dataLinkEntitiesOutput);
+
+            dbEntityService.saveEntities(prediction.getId(), setDbEntitySaveEntitiesInputList(dataLinkEntitiesOutput, linkOutput.getId()));
+        }
 
         return prediction.getId();
+    }
+
+    private DbEntitySaveEntitiesInputList setDbEntitySaveEntitiesInputList(DbEntityGetFromNerGroups groups, Long linkId) {
+        DbEntitySaveEntitiesInputList dbEntitySaveEntitiesInputList = new DbEntitySaveEntitiesInputList();
+        List<DbEntitySaveEntitiesInput> inputList = new ArrayList<>();
+        dbEntitySaveEntitiesInputList.setInputList(inputList);
+
+        if (groups.getPLACE() != null) {
+            for (String place : groups.getPLACE()) {
+                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(place).entityTypeEnumKey("PLACE").linkId(linkId).build());
+            }
+        }
+        if (groups.getOTHER() != null) {
+            for (String other : groups.getOTHER()) {
+                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(other).entityTypeEnumKey("OTHER").linkId(linkId).build());
+            }
+        }
+        if (groups.getENTITY() != null) {
+            for (String entity : groups.getENTITY()) {
+                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(entity).entityTypeEnumKey("ENTITY").linkId(linkId).build());
+            }
+        }
+        if (groups.getTIME() != null) {
+            for (String time : groups.getTIME()) {
+                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(time).entityTypeEnumKey("TIME").linkId(linkId).build());
+            }
+        }
+        if (groups.getDATE() != null) {
+            for (String date : groups.getDATE()) {
+                dbEntitySaveEntitiesInputList.getInputList().add(DbEntitySaveEntitiesInput.builder().name(date).entityTypeEnumKey("DATE").linkId(linkId).build());
+            }
+        }
+        return dbEntitySaveEntitiesInputList;
     }
 }

@@ -16,4 +16,7 @@ public class DbEntitySaveEntitiesInput {
     @JsonProperty
     private String entityTypeEnumKey;
 
+    @JsonProperty
+    private Long linkId;
+
 }

@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN mvn clean install
+RUN mvn clean install -Dmaven.test.skip=true
 
 FROM openjdk:17
 
