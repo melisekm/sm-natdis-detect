@@ -6,8 +6,10 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
 
+from dcesm.connectors.api_client import APIClient
 from dcesm.connectors.keycloak_auth import keycloak_authenticate
 from dcesm.mock_data import mock_prediction
+from dcesm.schemas import PredictionResponse
 
 
 class Homepage(View):
@@ -19,7 +21,14 @@ class ViewWithAPIClient(View):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # self.api_client = APIClient()
+        self.api_client = APIClient()
+
+    def setup(self, request, *args, **kwargs):
+        if 'token' in request.session:
+            self.api_client.token = request.session['token']
+            self.api_client.token_expiration = request.session['token_expiration']
+            self.api_client.user = request.session['user']
+        super().setup(request, *args, **kwargs)
 
 
 class Login(View):
@@ -59,24 +68,28 @@ class Logout(View):
         return redirect('login')
 
 
-class CreatePrediction(View):
+class CreatePrediction(ViewWithAPIClient):
     def get(self, request):
         return render(request, 'predict.html')
 
     def post(self, request):
-        payload = request.POST
-        text = payload['SocialMediaPost']
+        text = request.POST['SocialMediaPost']
         if isinstance(text, str):
             text = text.strip()
         if not text:
             messages.error(request, 'Please enter a text to predict.')
             return render(request, 'predict.html')
-        # prediction = self.api_client.predict(text)
-        if 'Ida' in text:
-            prediction = mock_prediction['informative']
-        else:
-            prediction = mock_prediction['non-informative']
-        return render(request, 'predict.html', {'prediction': prediction, 'text': text, 'detailed': False})
+        try:
+            prediction = self.api_client.predict(text)
+        except Exception as e:
+            logging.exception(e)
+            messages.error(request, 'Failed to make prediction. Please try again later.')
+            return render(request, 'predict.html')
+
+        return render(
+            request, 'predict.html',
+            {'prediction': transform_prediction(prediction), 'text': text, 'detailed': False}
+        )
 
 
 class PredictionDetail(View):
@@ -137,3 +150,8 @@ class RatePrediction(View):
         logging.info(payload)
         # self.api_client.rate_prediction(payload['prediction_id'], payload['rating'])
         return JsonResponse({'message': 'Prediction has been rated successfully.'})
+
+
+def transform_prediction(prediction: PredictionResponse):
+    logging.info(prediction.model_dump())
+    return mock_prediction['informative'] if prediction.informative else mock_prediction['non-informative']

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    container_name: proxy_entrypoint_service
+    container_name: proxy-entrypoint-service
     build: .
     env_file:
       - .env

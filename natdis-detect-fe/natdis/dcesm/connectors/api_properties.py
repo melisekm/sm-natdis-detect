@@ -1,8 +1,9 @@
-from django.conf import settings
-
-
 class APIProperties:
-    def __init__(self):
-        self.api_host = settings.API_HOST
+    def __init__(self, api_host: str):
+        self.api_host = api_host
 
-        ...
+    def create_prediction_url(self):
+        return self.api_host + "/prediction/flow"
+
+    def get_prediction_url(self, prediction_id: int):
+        return self.api_host + f"/prediction/{prediction_id}"
