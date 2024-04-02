@@ -127,3 +127,7 @@ textarea {
 .is-hide{
   display:none;
 }
+
+#predictions tbody tr td{
+    cursor: pointer;
+}

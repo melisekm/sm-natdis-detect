@@ -8,7 +8,6 @@ from django.views import View
 
 from dcesm.connectors.api_client import APIClient
 from dcesm.connectors.keycloak_auth import keycloak_authenticate
-from dcesm.mock_data import mock_prediction
 from dcesm.schemas import PredictionResponse, Entity, Link
 
 
@@ -92,16 +91,17 @@ class CreatePrediction(ViewWithAPIClient):
         )
 
 
-class PredictionDetail(View):
+class PredictionDetail(ViewWithAPIClient):
     def get(self, request, prediction_id):
-        # prediction = self.api_client.get_prediction(prediction_id)
-        if prediction_id == 1:
-            prediction = mock_prediction['informative']
-        elif prediction_id == 2:
-            prediction = mock_prediction['non-informative']
-        else:
+        try:
+            prediction = self.api_client.get_prediction(prediction_id)
+        except Exception as e:
+            logging.exception(e)
             return render(request, '404.html')
-        return render(request, 'prediction_detail.html', {'prediction': prediction, 'detailed': True})
+        return render(
+            request, 'prediction_detail.html',
+            {'prediction': transform_prediction(prediction), 'detailed': True}
+        )
 
 
 def truncate_with_ellipsis(text: str, max_len: int) -> str:
@@ -110,15 +110,20 @@ def truncate_with_ellipsis(text: str, max_len: int) -> str:
     return text
 
 
-class Predictions(View):
+class Predictions(ViewWithAPIClient):
     def get(self, request):
-        # predictions = self.api_client.get_predictions()
-        data = [mock_prediction['informative'], mock_prediction['non-informative']]
+        try:
+            predictions = self.api_client.get_predictions()
+        except Exception as e:
+            logging.exception(e)
+            return render(request, 'predictions.html', {'predictions': []})
+
+        data = [transform_prediction(prediction) for prediction in predictions]
         res = []
         for prediction in data:
             res.append({
                 'id': prediction['id'],
-                'created_at': prediction['created_at'].replace('T', ' ')[:16],
+                'created_at': str(prediction['created_at']).replace('T', ' ')[:16],
                 'text': truncate_with_ellipsis(prediction['text'], 75),
                 'label': prediction['label'],
                 'confidence': prediction['confidence'],

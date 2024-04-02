@@ -10,3 +10,6 @@ class APIProperties:
 
     def get_rate_prediction_url(self, prediction_id: int, rating: str):
         return self.api_host + f"/prediction/{prediction_id}/rate/{rating}"
+
+    def find_all_predictions_url(self):
+        return self.api_host + "/predictions"

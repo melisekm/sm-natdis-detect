@@ -51,8 +51,6 @@
                 const url = `{% url 'prediction_detail' 0 %}`
                 window.location.href = url.replace('0', id)
             })
-            // make all td elements clickable
-            $('#predictions tbody tr td').css('cursor', 'pointer');
         });
     </script>
 {% endblock %}
