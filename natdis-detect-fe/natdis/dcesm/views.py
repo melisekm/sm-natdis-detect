@@ -9,7 +9,7 @@ from django.views import View
 from dcesm.connectors.api_client import APIClient
 from dcesm.connectors.keycloak_auth import keycloak_authenticate
 from dcesm.mock_data import mock_prediction
-from dcesm.schemas import PredictionResponse
+from dcesm.schemas import PredictionResponse, Entity, Link
 
 
 class Homepage(View):
@@ -84,7 +84,7 @@ class CreatePrediction(ViewWithAPIClient):
         except Exception as e:
             logging.exception(e)
             messages.error(request, 'Failed to make prediction. Please try again later.')
-            return render(request, 'predict.html')
+            return render(request, 'predict.html', {'text': text})
 
         return render(
             request, 'predict.html',
@@ -144,14 +144,62 @@ class CreateEntityAnnotation(View):
         return render(request, 'create_entity_annotation.html')
 
 
-class RatePrediction(View):
+class RatePrediction(ViewWithAPIClient):
     def post(self, request):
         payload = json.loads(request.body.decode('utf-8'))
-        logging.info(payload)
-        # self.api_client.rate_prediction(payload['prediction_id'], payload['rating'])
-        return JsonResponse({'message': 'Prediction has been rated successfully.'})
+        try:
+            prediction = self.api_client.rate_prediction(payload['prediction_id'], payload['rating'])
+        except Exception as e:
+            logging.exception(e)
+            return JsonResponse({'message': 'Failed to rate the prediction. Please try again later.'}, status=500)
+        rating = 'Positive' if prediction.rating is True else 'Negative' if prediction.rating is False else 'Unknown'
+        return JsonResponse({'message': 'Prediction has been rated successfully.', 'rating': rating})
 
 
 def transform_prediction(prediction: PredictionResponse):
-    logging.info(prediction.model_dump())
-    return mock_prediction['informative'] if prediction.informative else mock_prediction['non-informative']
+    return {
+        'id': prediction.id,
+        'created_at': prediction.createdAt,
+        'rating': 'Positive' if prediction.rating is True else 'Negative' if prediction.rating is False else 'Unknown',
+        'text': prediction.predictionText,
+        'label': 'Informative' if prediction.informative is True else 'Non-Informative',
+        'confidence': prediction.confidence,
+        # we only want to associate those that do not belong to a link
+        'entities': transform_entities(
+            [entity for entity in prediction.entities if entity.linkId is None]
+        ),
+        'links': transform_links(
+            prediction.links, [entity for entity in prediction.entities if entity.linkId is not None]
+        ),
+    }
+
+
+def transform_entities(entities: list[Entity]):
+    res = {'locations': [], 'date_time': [], 'entities': [], 'other': []}
+    for entity in entities:
+        match entity.entityTypeEnumValue:
+            case 'PLACE':
+                target = 'locations'
+            case 'DATE' | 'TIME':
+                target = 'date_time'
+            case 'ENTITY':
+                target = 'entities'
+            case 'OTHER':
+                target = 'other'
+            case _:
+                logging.warning(f"Unknown entity type: {entity.entityTypeEnumValue}")
+                continue
+        res[target].append(entity.name)
+
+    return res
+
+
+def transform_links(links: list[Link], entities: list[Entity]):
+    return [{
+        'link': link.finalUrl,
+        'title': link.title,
+        'published_at': link.publishedAt,
+        'has_entities': any(entity.linkId == link.id for entity in entities),
+        'entities': transform_entities([entity for entity in entities if entity.linkId == link.id]),
+        'description': link.text,
+    } for link in links]

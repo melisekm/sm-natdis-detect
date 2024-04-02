@@ -1,5 +1,7 @@
 import datetime
 import logging
+from typing import Literal
+
 import requests
 from django.conf import settings
 
@@ -72,3 +74,15 @@ class APIClient:
         except requests.exceptions.RequestException as e:
             logging.exception(f"Failed to make a prediction. Network error has occurred. {e}")
             raise e
+
+    def rate_prediction(self, prediction_id: int, rating: Literal['true', 'false']):
+        try:
+            r = self.make_base_post_request(
+                self.api_properties.get_rate_prediction_url(prediction_id, rating)
+            )
+            r.raise_for_status()
+            return PredictionResponse(**r.json())
+        except requests.exceptions.RequestException as e:
+            logging.exception(f"Failed to rate the prediction. Network error has occurred. {e}")
+            raise e
+

@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, validator
 import datetime as dt
 
 EntityType = Literal['PLACE', 'ENTITY', 'OTHER', 'DATE', 'TIME']
@@ -25,11 +25,12 @@ class Entity(BaseModel):
     entityTypeEnumKey: EntityType
     entityTypeEnumValue: EntityType
     predictionId: int
+    linkId: int | None
     createdAt: dt.datetime
 
     @field_validator('entityTypeEnumValue', mode='before')
-    @classmethod
     def validate_entity_type(cls, value):
+        # its the smme but not uppercase, we do not care about that
         return value.upper()
 
 
@@ -43,3 +44,7 @@ class PredictionResponse(BaseModel):
     rating: None | bool  # True for positive, False for negative, null for unknown
     links: list[Link] = Field(default_factory=list)
     entities: list[Entity] = Field(default_factory=list)
+
+    @field_validator('confidence', mode='after')
+    def round_confidence(cls, value):
+        return round(value, 3)

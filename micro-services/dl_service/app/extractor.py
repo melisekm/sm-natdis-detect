@@ -3,9 +3,10 @@ from __future__ import annotations
 import ast
 import dataclasses
 import logging
+import random
 import re
 import urllib.parse as urlparse
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 from bs4 import BeautifulSoup
@@ -86,11 +87,12 @@ class NewspaperExtractor:
                 return ExtractionError(url=url, description="Unable to transform Article.", exception=str(exception))
             logging.debug(f"Parsing Article. URL: {url}")
 
+
             article = ExtractionResult(
                 orig_url=url,
                 final_url=download_result.final_url,
-                extracted_at=datetime.now().isoformat(),
-                published_at=str(parsed_article.publish_date) if parsed_article.publish_date else None,
+                extracted_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S+00:00"),
+                published_at=str(parsed_article.publish_date) if parsed_article.publish_date else random_date().strftime("%Y-%m-%d %H:%M:%S+00:00"),
                 title=parsed_article.title,
                 text=parsed_article.text,
                 html=parsed_article.article_html,
@@ -164,3 +166,10 @@ def get_final_url(response: requests.Response) -> str:
             if match:
                 return match.group(1)
     return response.url
+
+
+# Mock random date
+def random_date():
+    start = datetime.now() - timedelta(days=10*365)
+    end = datetime.now()
+    return start + timedelta(seconds=random.randint(0, int((end - start).total_seconds())))

@@ -13,14 +13,25 @@
         </div>
         <div class="row">
             <div class="col mt-3 text-center">
-                <button class="btn w-25 btn-blue">Submit</button>
+                <button id='submit' class="btn w-25 btn-blue">Submit</button>
             </div>
         </div>
     </form>
+
     {% if prediction %}
         {% include 'prediction_comp.html' %}
         <div class="justify-content-center d-flex mb-3">
             <a href="{% url 'prediction_detail' prediction.id %}" class="btn btn-primary mt-3">View Prediction</a>
         </div>
     {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            $("#submit").click(function () {
+                $("#overlay").fadeIn(300);
+            });
+        });
+    </script>
 {% endblock %}

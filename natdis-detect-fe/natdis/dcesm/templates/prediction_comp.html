@@ -9,7 +9,7 @@
                             <span class="text-decoration-underline">{{ prediction.label }}</span>
                         </p>
                         <p class="fs-5">Confidence: {{ prediction.confidence }} % </p>
-                        <p class="fs-5">User Rating: {{ prediction.rating }}</p>
+                        <p class="fs-5" >User Rating: <span id="userRating">{{ prediction.rating }}</span></p>
                         {% if prediction.label == 'Non-Informative' %}
                             <p class="">This post is not informative, thus no further analysis is done</p>
                         {% else %}
@@ -20,8 +20,8 @@
                     </div>
                     <div class="col">
                         <p class="fs-5">Rate this prediction</p>
-                        <button class="btn btn-success" onclick="ratePrediction('positive')">Positive</button>
-                        <button class="btn btn-danger" onclick="ratePrediction('negative')">Negative</button>
+                        <button class="btn btn-success" onclick="ratePrediction('true')">Positive</button>
+                        <button class="btn btn-danger" onclick="ratePrediction('false')">Negative</button>
 
                     </div>
                 </div>
@@ -145,7 +145,13 @@
 {% endif %}
 
 {% block scripts %}
+    <script src="https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js"></script>
     <script>
+        $.notify.defaults({
+            autoHideDelay: 1500
+            
+        });
+        const userRating = $('#userRating')
         function ratePrediction(rating) {
             fetch('/rate_prediction/', {
                 method: 'POST',
@@ -158,10 +164,10 @@
                     'prediction_id': '{{ prediction.id }}'
                 })
             }).then(response => response.json()).then(response => {
-                alert(response.message);
-                location.reload();
+                userRating.notify('Rating submitted', 'success');
+                userRating.text(response.rating);
             }).catch(error => {
-                alert('An error occurred, please try again');
+                userRating.notify('Error submitting rating', 'error');
                 console.error('Error:', error);
             });
         }
