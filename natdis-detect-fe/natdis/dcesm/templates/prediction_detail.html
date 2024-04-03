@@ -1,0 +1,10 @@
+{% extends '_layout.html' %}
+{% block content %}
+    <div class="row mt-3">
+        <div class="col">
+            <h3>Text:</h3>
+            <p class="fs-5">{{ prediction.text }}</p>
+        </div>
+    </div>
+    {% include 'prediction_comp.html' %}
+{% endblock %}

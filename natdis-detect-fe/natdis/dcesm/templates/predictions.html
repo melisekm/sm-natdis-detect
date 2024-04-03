@@ -1,0 +1,56 @@
+{% extends '_layout.html' %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.3/r-3.0.1/datatables.min.css" rel="stylesheet">
+
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.0.3/r-3.0.1/datatables.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1 class="my-3">Historical Predictions</h1>
+    <div>
+        <table id="predictions" class="table table table-bordered table-striped dataTable">
+            <thead>
+            {% for param in headers %}
+                <th>{{ param }}</th>
+            {% endfor %}
+            </thead>
+            <tbody>
+            {% for prediction in predictions %}
+                <tr id="tr{{ prediction.id }}">
+                <td>{{ prediction.id }}</td>
+                <td>{{ prediction.created_at }}</td>
+                <td>{{ prediction.text }}</td>
+                <td>{{ prediction.label }}</td>
+                <td>{{ prediction.confidence }}</td>
+                <td>{{ prediction.entities }}</td>
+                <td>{{ prediction.links }}</td>
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function () {
+            const predictionTable = $('#predictions')
+            let table = predictionTable.DataTable({
+                responsive: true,
+                columnDefs: [
+                    {className: 'text-center', targets: [0,1, -1, -2, -3, -4]},
+                ],
+
+            });
+            predictionTable.on('click', 'tbody tr', function () {
+                const id = table.row(this).data()[0];
+                // navigate to the detail page
+                const url = `{% url 'prediction_detail' 0 %}`
+                window.location.href = url.replace('0', id)
+            })
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,17 @@
+services:
+  web:
+    build: .
+    container_name: natdis-detect-fe
+    env_file:
+      - .env
+    environment:
+      - TZ=Europe/Bratislava
+    ports:
+      - ${DJANGO_PORT_EXPOSE:-8180}:8000
+    volumes:
+      - "./dcesm:/code/dcesm"
+
+networks:
+  default:
+    name: aass_network
+    external: true

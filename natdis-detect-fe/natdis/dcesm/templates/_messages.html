@@ -1,0 +1,22 @@
+{% if messages %}
+    {% for message in messages %}
+        <div class="mt-2">
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true"></button>
+                {{ message }}
+            </div>
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true"></button>
+                {{ message }}
+            </div>
+        {% else %}
+            <div class="alert alert-info alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true"></button>
+                {{ message }}
+            </div>
+        {% endif %}
+        </div>
+    {% endfor %}
+{% endif %}

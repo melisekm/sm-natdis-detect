@@ -1,0 +1,37 @@
+{% extends '_layout.html' %}
+
+{% block content %}
+    <h1 class="my-3">Create prediction</h1>
+    <form method="POST" action="">
+        <div class="row ">
+            <div class="col">
+                {% csrf_token %}
+                <label for="SocialMediaPost" class="fs-4 form-label mt-md-0 mt-3">Social Media Post Text</label>
+                <textarea required name="SocialMediaPost" class="form-control rounded-2"
+                          id="SocialMediaPost" rows="5">{{ text }}</textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mt-3 text-center">
+                <button id='submit' class="btn w-25 btn-blue">Submit</button>
+            </div>
+        </div>
+    </form>
+
+    {% if prediction %}
+        {% include 'prediction_comp.html' %}
+        <div class="justify-content-center d-flex mb-3">
+            <a href="{% url 'prediction_detail' prediction.id %}" class="btn btn-primary mt-3">View Prediction</a>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            $("#submit").click(function () {
+                $("#overlay").fadeIn(300);
+            });
+        });
+    </script>
+{% endblock %}

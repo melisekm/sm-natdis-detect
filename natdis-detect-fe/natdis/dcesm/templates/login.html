@@ -1,0 +1,56 @@
+{% extends "_layout.html" %}
+{% load i18n static %}
+
+{#{% block stylesheets %}#}
+{#    {{ block.super }}#}
+{#    <link rel="stylesheet" href="{% static "styles/profile.css" %}">#}
+{#{% endblock %}#}
+
+{% block title %}Sign In{% endblock %}
+
+{% block body %}
+    <main class="container">
+        <div class="row d-flex align-items-center justify-content-center min-vh-100">
+            <div class="col-xl-7">
+                <div class="background-rectangle px-5 py-4 mt-4 mb-5">
+                    <div class="row">
+                        <div class="col text-center">
+                            <h1>Sign In</h1>
+                            {% if message %}
+                                <div class="alert alert-danger">
+                                    <p>{{ message }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <form method="POST" action="">
+                        {% csrf_token %}
+
+                        <div class="container">
+                            <div class="mb-3">
+                                <label for="username" class="fs-5 form-label">Username</label>
+                                <input id="username" class="form-control form-rounded" type="text" name="username"
+                                       required autofocus/>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="fs-5 form-label">Password:</label>
+                                <input id="password" class="form-control form-rounded" type="password" name="password"
+                                       required/>
+                            </div>
+
+                            <div class="row">
+                                <div class="col mt-3 text-center">
+                                    <button class="btn btn-confirm btn-blue"> Sign In</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+{% endblock %}
