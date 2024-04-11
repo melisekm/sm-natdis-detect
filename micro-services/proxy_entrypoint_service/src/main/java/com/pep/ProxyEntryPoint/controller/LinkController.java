@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -103,9 +104,27 @@ public class LinkController extends AbstractController<LinkInput, LinkOutput, Li
     }
 
     @Override
+    public void downloadFromLinksCamunda(String processInstanceId, DataInput dataInput) {
+        try {
+            linkService.downloadFromLinksCamunda(processInstanceId, dataInput);
+        } catch (Exception e) {
+            throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
+        }
+    }
+
+    @Override
     public List<LinkOutput> saveLinksToPrediction(List<LinkInput> input, Long predictionId) {
         try {
             return linkService.saveLinksToPrediction(input, predictionId);
+        } catch (Exception e) {
+            throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
+        }
+    }
+
+    @Override
+    public void saveLinksToPredictionCamunda(String input, Long predictionId) {
+        try {
+            linkService.saveLinksToPredictionCamunda(input, predictionId);
         } catch (Exception e) {
             throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
         }

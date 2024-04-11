@@ -1,6 +1,6 @@
 package com.pep.ProxyEntryPoint.service;
 
-import com.pep.ProxyEntryPoint.apiClient.ApiClient;
+import com.pep.ProxyEntryPoint.apiClient.MSApiClient;
 import com.pep.ProxyEntryPoint.converter.PredictionConverter;
 import com.pep.ProxyEntryPoint.model.entity.Prediction;
 import com.pep.ProxyEntryPoint.model.repository.PredictionRepository;
@@ -18,6 +18,10 @@ import com.pep.ProxyEntryPoint.rest.dto.PredictionInput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionPredictServiceOutput;
 import com.pep.ProxyEntryPoint.util.ApiClientUtils;
+import org.camunda.community.rest.client.dto.ProcessInstanceWithVariablesDto;
+import org.camunda.community.rest.client.dto.TaskDto;
+import org.camunda.community.rest.client.dto.VariableValueDto;
+import org.camunda.community.rest.client.invoker.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -37,10 +41,11 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
 
     private final PredictionRepository predictionRepository;
     private final PredictionConverter predictionConverter;
-    private final ApiClient apiClient;
+    private final MSApiClient MSApiClient;
     private final JmsTemplate jmsTemplate;
     private final DbEntityService dbEntityService;
     private final LinkService linkService;
+    private final CamundaService camundaService;
 
     @Value("${predict.service.url}")
     private String predictServiceUrl;
@@ -48,17 +53,19 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
     @Autowired
     protected PredictionService(PredictionRepository predictionRepository,
                                 PredictionConverter predictionConverter,
-                                ApiClient apiClient,
+                                MSApiClient MSApiClient,
                                 JmsTemplate jmsTemplate,
                                 DbEntityService dbEntityService,
-                                LinkService linkService) {
+                                LinkService linkService,
+                                CamundaService camundaService) {
         super(predictionRepository, predictionConverter);
         this.predictionRepository = predictionRepository;
         this.predictionConverter = predictionConverter;
-        this.apiClient = apiClient;
+        this.MSApiClient = MSApiClient;
         this.jmsTemplate = jmsTemplate;
         this.dbEntityService = dbEntityService;
         this.linkService = linkService;
+        this.camundaService = camundaService;
     }
 
     @Override
@@ -109,7 +116,7 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
         bodyRequest.put("data", input.getData());
         apiCallInput.setBodyRequest(bodyRequest);
 
-        List<LinkedHashMap<String, Object>> linkedHashMapList = apiClient.invokeApi(apiCallInput, List.class).getBody();
+        List<LinkedHashMap<String, Object>> linkedHashMapList = MSApiClient.invokeApi(apiCallInput, List.class).getBody();
         return ApiClientUtils.convertLinkedHashMapToObject(linkedHashMapList, PredictionPredictServiceOutput.class);
     }
 
@@ -217,5 +224,22 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
             }
         }
         return dbEntitySaveEntitiesInputList;
+    }
+
+    public void startPredictionProcess(String input) throws ApiException {
+//        Map<String, VariableValueDto> variables = new HashMap<>();
+//        variables.put("input", new VariableValueDto().value(input).type("String"));
+//        return camundaService.startProcessByKey("PredictionMainFlow", variables);
+        //start process
+        Map<String, Object> variables = new HashMap<>();
+        ProcessInstanceWithVariablesDto processOutput = camundaService.startProcessByKey(null, "PredictionMainFlow");
+
+        // submit user task
+        // get user task
+        TaskDto taskDto = camundaService.getUserTask("inputUserTask");
+        // submit user task
+        Map<String, VariableValueDto> variablesTask = new HashMap<>();
+        variablesTask.put("input", new VariableValueDto().value(input).type("String"));
+        camundaService.submitUserTask(taskDto.getId(), variablesTask);
     }
 }

@@ -1,6 +1,8 @@
 package com.pep.ProxyEntryPoint.service;
 
-import com.pep.ProxyEntryPoint.apiClient.ApiClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.internal.LinkedTreeMap;
+import com.pep.ProxyEntryPoint.apiClient.MSApiClient;
 import com.pep.ProxyEntryPoint.converter.DbEntityConverter;
 import com.pep.ProxyEntryPoint.model.entity.DbEntity;
 import com.pep.ProxyEntryPoint.model.entity.Prediction;
@@ -15,6 +17,7 @@ import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInput;
 import com.pep.ProxyEntryPoint.rest.dto.DbEntitySaveEntitiesInputList;
 import com.pep.ProxyEntryPoint.rest.dto.DataInput;
 import com.pep.ProxyEntryPoint.util.ApiClientUtils;
+import com.pep.ProxyEntryPoint.util.Base64Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -35,24 +38,27 @@ public class DbEntityService extends AbstractService<NotUsed, DbEntityOutput, Db
     private final DbEntityRepository dbEntityRepository;
     private final DbEntityConverter dbEntityConverter;
     private final PredictionService predictionService;
-    private final ApiClient apiClient;
+    private final MSApiClient MSApiClient;
     private final EntityTypeEnumRepository entityTypeEnumRepository;
     private final LinkRepository linkRepository;
+    private final CamundaService camundaService;
 
     @Autowired
     protected DbEntityService(DbEntityRepository dbEntityRepository,
                               DbEntityConverter dbEntityConverter,
                               @Lazy PredictionService predictionService,
-                              ApiClient apiClient,
+                              MSApiClient MSApiClient,
                               EntityTypeEnumRepository entityTypeEnumRepository,
-                              LinkRepository linkRepository) {
+                              LinkRepository linkRepository,
+                              CamundaService camundaService) {
         super(dbEntityRepository, dbEntityConverter);
         this.dbEntityRepository = dbEntityRepository;
         this.dbEntityConverter = dbEntityConverter;
         this.predictionService = predictionService;
-        this.apiClient = apiClient;
+        this.MSApiClient = MSApiClient;
         this.entityTypeEnumRepository = entityTypeEnumRepository;
         this.linkRepository = linkRepository;
+        this.camundaService = camundaService;
     }
 
     @Value("${ner.service.url}")
@@ -112,7 +118,28 @@ public class DbEntityService extends AbstractService<NotUsed, DbEntityOutput, Db
         bodyRequest.put("data", input.getData());
         apiCallInput.setBodyRequest(bodyRequest);
 
-        List<LinkedHashMap<String, Object>> linkedHashMapList = apiClient.invokeApi(apiCallInput, List.class).getBody();
+        List<LinkedHashMap<String, Object>> linkedHashMapList = MSApiClient.invokeApi(apiCallInput, List.class).getBody();
         return ApiClientUtils.convertLinkedHashMapToObject(linkedHashMapList, DbEntityGetFromNerOutput.class);
+    }
+
+    @Transactional
+    public void getEntitiesFromNERCamunda(String input, String processInstanceId) throws Exception {
+        List<LinkedTreeMap> decodedList = Base64Utils.decodeFromBase64(input, List.class);
+
+        List<String> linkInputList = new ArrayList<>();
+        for (LinkedTreeMap map : decodedList) {
+            linkInputList.add((String) map.get("text"));
+        }
+
+        DataInput dataInput = new DataInput();
+        dataInput.setData(linkInputList);
+
+        DbEntityGetFromNerOutput output = getEntitiesFromNER(dataInput);
+        Map<String, String> jsonMap = new HashMap<>();
+        jsonMap.put("value", Base64Utils.encodeToBase64(output));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonValue = objectMapper.writeValueAsString(jsonMap);
+
+        camundaService.setProcessInstanceVariable(processInstanceId, "dbEntityGetFromNerOutput", jsonValue, "Json");
     }
 }

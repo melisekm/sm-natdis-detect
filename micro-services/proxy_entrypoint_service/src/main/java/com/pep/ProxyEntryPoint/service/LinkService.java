@@ -1,7 +1,9 @@
 package com.pep.ProxyEntryPoint.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pep.ProxyEntryPoint.apiClient.ApiClient;
+import com.google.gson.internal.LinkedTreeMap;
+import com.pep.ProxyEntryPoint.apiClient.MSApiClient;
 import com.pep.ProxyEntryPoint.converter.LinkConverter;
 import com.pep.ProxyEntryPoint.model.entity.Link;
 import com.pep.ProxyEntryPoint.model.entity.Prediction;
@@ -14,8 +16,9 @@ import com.pep.ProxyEntryPoint.rest.dto.LinkDownloadOutputList;
 import com.pep.ProxyEntryPoint.rest.dto.LinkInput;
 import com.pep.ProxyEntryPoint.rest.dto.LinkOutput;
 import com.pep.ProxyEntryPoint.rest.dto.DataInput;
-import com.pep.ProxyEntryPoint.rest.dto.PredictionPredictServiceOutput;
 import com.pep.ProxyEntryPoint.util.ApiClientUtils;
+import com.pep.ProxyEntryPoint.util.Base64Utils;
+import org.camunda.community.rest.client.invoker.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -34,25 +37,28 @@ import java.util.Map;
 @Service
 public class LinkService extends AbstractService<LinkInput, LinkOutput, Link, Long>{
 
-    private final ApiClient apiClient;
+    private final MSApiClient MSApiClient;
     private final JmsTemplate jmsTemplate;
     private final PredictionRepository predictionRepository;
     private final LinkConverter linkConverter;
     private final LinkRepository linkRepository;
+    private final CamundaService camundaService;
 
     @Autowired
     public LinkService(LinkRepository entityRepository,
                        LinkConverter entityConverter,
-                       ApiClient apiClient,
+                       MSApiClient MSApiClient,
                        JmsTemplate jmsTemplate,
                        PredictionRepository predictionRepository,
-                       LinkRepository linkRepository) {
+                       LinkRepository linkRepository,
+                       CamundaService camundaService) {
         super(entityRepository, entityConverter);
-        this.apiClient = apiClient;
+        this.MSApiClient = MSApiClient;
         this.jmsTemplate = jmsTemplate;
         this.predictionRepository = predictionRepository;
         this.linkConverter = entityConverter;
         this.linkRepository = linkRepository;
+        this.camundaService = camundaService;
     }
 
     @Value("${dl.service.url}")
@@ -93,7 +99,7 @@ public class LinkService extends AbstractService<LinkInput, LinkOutput, Link, Lo
         bodyRequest.put("data", input.getData());
         apiCallInput.setBodyRequest(bodyRequest);
 
-        List<LinkedHashMap<String, Object>> linkedHashMapList = apiClient.invokeApi(apiCallInput, List.class).getBody();
+        List<LinkedHashMap<String, Object>> linkedHashMapList = MSApiClient.invokeApi(apiCallInput, List.class).getBody();
         return ApiClientUtils.convertLinkedHashMapToObject(linkedHashMapList, LinkCountOutput.class);
     }
 
@@ -107,7 +113,7 @@ public class LinkService extends AbstractService<LinkInput, LinkOutput, Link, Lo
         bodyRequest.put("data", input.getData());
         apiCallInput.setBodyRequest(bodyRequest);
 
-        List<LinkedHashMap<String, Object>> linkedHashMapList = apiClient.invokeApi(apiCallInput, List.class).getBody();
+        List<LinkedHashMap<String, Object>> linkedHashMapList = MSApiClient.invokeApi(apiCallInput, List.class).getBody();
         LinkDownloadOutputList linkDownloadOutputList = new LinkDownloadOutputList();
         try {
             List<LinkDownloadOutput> outputList = convertLinkedHashMapListToObjectList(linkedHashMapList);
@@ -158,5 +164,39 @@ public class LinkService extends AbstractService<LinkInput, LinkOutput, Link, Lo
         }
         List<Link> savedLinks = linkRepository.saveAll(links);
         return linkConverter.convertToOutputList(savedLinks);
+    }
+
+    @Transactional
+    public void downloadFromLinksCamunda(String processInstanceId, DataInput dataInput) throws ApiException, JsonProcessingException {
+        LinkDownloadOutputList linkDownloadOutputList = downloadFromLinks(dataInput);
+
+        Map<String, String> jsonMap = new HashMap<>();
+        jsonMap.put("value", Base64Utils.encodeToBase64(linkDownloadOutputList.getOutputList()));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonValue = objectMapper.writeValueAsString(jsonMap);
+
+        camundaService.setProcessInstanceVariable(processInstanceId, "linkDownloadOutputList", jsonValue, "Json");
+    }
+
+    @Transactional
+    public void saveLinksToPredictionCamunda(String input, Long predictionId) throws Exception {
+        List<LinkedTreeMap> decodedList = Base64Utils.decodeFromBase64(input, List.class);
+
+        List<LinkInput> linkInputList = new ArrayList<>();
+        for (LinkedTreeMap map : decodedList) {
+            LinkInput linkInput = new LinkInput();
+            linkInput.setOriginUrl((String) map.get("originUrl"));
+            linkInput.setFinalUrl((String) map.get("finalUrl"));
+            linkInput.setText((String) map.get("text"));
+            linkInput.setHtml((String) map.get("html"));
+            linkInput.setTitle((String) map.get("title"));
+            linkInput.setOtherInfo((Map<String, Object>) map.get("otherInfo"));
+            linkInput.setDomain((String) map.get("domain"));
+            linkInput.setPublishedAt(LocalDateTime.parse((String) map.get("publishedAt")));
+            linkInput.setExtractedAt(LocalDateTime.parse((String) map.get("extractedAt")));
+            linkInputList.add(linkInput);
+        }
+
+        saveLinksToPrediction(linkInputList, predictionId);
     }
 }

@@ -23,6 +23,10 @@ public class DefaultException extends RuntimeException{
         this(status, message, null, null);
     }
 
+    public DefaultException(HttpStatus status, Exception cause) {
+        this(status, cause.getMessage(), null, cause);
+    }
+
     public DefaultException(HttpStatus status, String message, Exception cause) {
         this(status, message, null, cause);
     }

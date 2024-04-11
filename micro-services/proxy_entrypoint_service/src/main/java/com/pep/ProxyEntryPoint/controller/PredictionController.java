@@ -9,6 +9,7 @@ import com.pep.ProxyEntryPoint.rest.dto.PredictionOutput;
 import com.pep.ProxyEntryPoint.rest.dto.PredictionPredictServiceOutput;
 import com.pep.ProxyEntryPoint.service.PredictionService;
 import lombok.extern.log4j.Log4j2;
+import org.camunda.community.rest.client.dto.ProcessInstanceWithVariablesDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,6 +93,15 @@ public class PredictionController extends AbstractController<PredictionInput, Pr
     public Long getFlow(String input) {
         try {
             return predictionService.getFlow(input);
+        } catch (Exception e) {
+            throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
+        }
+    }
+
+    @Override
+    public void startPredictionProcess(String input) {
+        try {
+            predictionService.startPredictionProcess(input);
         } catch (Exception e) {
             throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
         }

@@ -19,10 +19,10 @@ import java.util.Map;
 public class LinkInput {
 
     @NotNull
-    @JsonProperty("orig_url")
+//    @JsonProperty("orig_url")
     private String originUrl;
 
-    @JsonProperty("final_url")
+//    @JsonProperty("final_url")
     private String finalUrl;
 
     @JsonProperty
@@ -34,17 +34,17 @@ public class LinkInput {
     @JsonProperty
     private String title;
 
-    @JsonProperty("other_info")
+//    @JsonProperty("other_info")
     private Map<String, Object> otherInfo;
 
     @JsonProperty
     private String domain;
 
-    @JsonProperty("published_at")
+//    @JsonProperty("published_at")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime publishedAt;
 
-    @JsonProperty("extracted_at")
+//    @JsonProperty("extracted_at")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime extractedAt;
 

@@ -221,6 +221,35 @@ public interface LinkControllerApi {
     }
 
     @Operation(
+            operationId = "downloadFromLinksCamunda",
+            tags = {"Link"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    @PostMapping(
+            value = "/link/download/{processInstanceId}",
+            produces = {"application/json"},
+            consumes = {"application/json"}
+    )
+    default void downloadFromLinksCamunda(
+            @PathVariable String processInstanceId,
+            @RequestBody DataInput dataInput)
+    {
+    }
+
+    @Operation(
             operationId = "saveLinksToPrediction",
             tags = {"Link"},
             responses = {
@@ -248,6 +277,35 @@ public interface LinkControllerApi {
             @PathVariable Long predictionId)
     {
         return List.of();
+    }
+
+    @Operation(
+            operationId = "saveLinksToPredictionCamunda",
+            tags = {"Link"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    @PostMapping(
+            value = "/link/saveToPredictionCamunda/{predictionId}",
+            produces = {"application/json"},
+            consumes = {"application/json"}
+    )
+    default void saveLinksToPredictionCamunda(
+            @RequestBody String linkInputs,
+            @PathVariable Long predictionId)
+    {
     }
 
 }

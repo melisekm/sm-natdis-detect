@@ -1,0 +1,44 @@
+{
+  "components": [
+    {
+      "values": [
+        {
+          "label": "Rate Positive",
+          "value": "true"
+        },
+        {
+          "label": "Rate Negative",
+          "value": "false"
+        }
+      ],
+      "label": "Radio",
+      "type": "radio",
+      "layout": {
+        "row": "Row_172h49x",
+        "columns": null
+      },
+      "id": "Field_16ccuk6",
+      "key": "rating"
+    },
+    {
+      "action": "submit",
+      "label": "Rate",
+      "type": "button",
+      "layout": {
+        "row": null,
+        "columns": null
+      },
+      "id": "Field_1wdsfai",
+      "key": "field_0yncguc"
+    }
+  ],
+  "type": "default",
+  "id": "rateForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.14.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 10
+}

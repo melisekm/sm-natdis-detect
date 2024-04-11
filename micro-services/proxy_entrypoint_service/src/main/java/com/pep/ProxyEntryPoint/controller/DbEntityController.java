@@ -70,4 +70,13 @@ public class DbEntityController extends AbstractController<NotUsed, DbEntityOutp
             throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityCreate(), e);
         }
     }
+
+    @Override
+    public void getEntitiesFromNERCamunda(String input, String processInstanceId) {
+        try {
+            dbEntityService.getEntitiesFromNERCamunda(input, processInstanceId);
+        } catch (Exception e) {
+            throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityCreate(), e);
+        }
+    }
 }
