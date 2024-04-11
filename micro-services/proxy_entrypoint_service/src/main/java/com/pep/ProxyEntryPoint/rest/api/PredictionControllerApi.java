@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import org.camunda.community.rest.client.dto.ProcessInstanceWithVariablesDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
@@ -188,5 +189,31 @@ public interface PredictionControllerApi {
     )
     default ResponseEntity<List<PredictionOutput>> findAllPredictions() {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @Operation(
+            operationId = "startProcessWithPrediction",
+            tags = {TAG},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    @PostMapping(
+            value="/prediction/startProcess",
+            produces = {"application/json"}
+    )
+    default void startPredictionProcess(
+            @RequestBody String input) {
     }
 }

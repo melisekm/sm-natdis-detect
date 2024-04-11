@@ -17,12 +17,12 @@ import java.util.Collections;
 import java.util.Map;
 
 @Component
-public class ApiClient {
+public class MSApiClient {
 
     private final RestTemplate restTemplate;
 
     @Autowired
-    public ApiClient() {
+    public MSApiClient() {
         this.restTemplate = new RestTemplate();
     }
 

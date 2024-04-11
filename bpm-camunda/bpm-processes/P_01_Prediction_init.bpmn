@@ -1,79 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_071g1eb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.14.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
   <bpmn:collaboration id="Collaboration_1uk1ded">
-    <bpmn:participant id="Participant_0pc47qq" name="SM-NATDIS-DETECT" processRef="sPredictionInit" />
+    <bpmn:participant id="Participant_0pc47qq" name="SM-NATDIS-DETECT" processRef="PredictionInit" />
     <bpmn:participant id="Participant_1susnnf" name="Predict service" />
     <bpmn:messageFlow id="Flow_1ataylt" sourceRef="Activity_0c2wu1w" targetRef="Participant_1susnnf" />
   </bpmn:collaboration>
-  <bpmn:process id="sPredictionInit" name="P_SS_CR_06_01_Test_start_06" isExecutable="true">
+  <bpmn:process id="PredictionInit" name="P_01_Prediction_init" isExecutable="true" camunda:historyTimeToLive="1">
     <bpmn:laneSet id="LaneSet_0qsm96e">
       <bpmn:lane id="Lane_17qo38y" name="Proxy endpoint">
-        <bpmn:flowNodeRef>Event_17yzurg</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0c2wu1w</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_0w0374t</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0mqdxdw</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_0ochenw</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_0ogbi7l</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_17yzurg</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0ochenw</bpmn:flowNodeRef>
         <bpmn:childLaneSet id="LaneSet_00kei9h">
           <bpmn:lane id="Lane_0ylq0gp">
-            <bpmn:flowNodeRef>Event_17yzurg</bpmn:flowNodeRef>
             <bpmn:flowNodeRef>Activity_0c2wu1w</bpmn:flowNodeRef>
             <bpmn:flowNodeRef>Gateway_0w0374t</bpmn:flowNodeRef>
             <bpmn:flowNodeRef>Activity_0mqdxdw</bpmn:flowNodeRef>
-            <bpmn:flowNodeRef>Activity_0ochenw</bpmn:flowNodeRef>
             <bpmn:flowNodeRef>Event_0ogbi7l</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Event_17yzurg</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Activity_0ochenw</bpmn:flowNodeRef>
           </bpmn:lane>
         </bpmn:childLaneSet>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="Flow_0apduer" sourceRef="Event_17yzurg" targetRef="Activity_0c2wu1w" />
-    <bpmn:startEvent id="Event_17yzurg" name="Start">
-      <bpmn:extensionElements>
-        <camunda:executionListener event="end">
-          <camunda:script scriptFormat="javascript" />
-        </camunda:executionListener>
-      </bpmn:extensionElements>
-      <bpmn:outgoing>Flow_0apduer</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_0iy8ckw" sourceRef="Activity_0c2wu1w" targetRef="Activity_0mqdxdw" />
-    <bpmn:serviceTask id="Activity_0c2wu1w" name="Get prediction" camunda:asyncBefore="true">
-      <bpmn:extensionElements>
-        <camunda:connector>
-          <camunda:inputOutput>
-            <camunda:inputParameter name="headers">
-              <camunda:map>
-                <camunda:entry key="Content-Type">application/json</camunda:entry>
-                <camunda:entry key="Authorization">Bearer ${token.prop("token").stringValue()}</camunda:entry>
-              </camunda:map>
-            </camunda:inputParameter>
-            <camunda:inputParameter name="method">POST</camunda:inputParameter>
-            <camunda:inputParameter name="url">${SPIS_INT_API_URL}/cislaPodnikov/naplnenieCiselnejMnoziny</camunda:inputParameter>
-            <camunda:inputParameter name="payload">{
-  "processInstanceId": "${execution.processInstanceId}",
-  "cislaPodnikovIds": "${cislaPodnikovIds}",
-  "kodSablony": "SAB_SS_OSČ_09"
-}</camunda:inputParameter>
-            <camunda:outputParameter name="restResponse">#{response}</camunda:outputParameter>
-            <camunda:outputParameter name="statusCode">#{statusCode}</camunda:outputParameter>
-          </camunda:inputOutput>
-          <camunda:connectorId>http-connector</camunda:connectorId>
-        </camunda:connector>
-        <camunda:executionListener event="end">
-          <camunda:script scriptFormat="javascript">if(statusCode != 200){
-  throw new java.lang.Exception("Chyba služby! Status code " + statusCode + " response: " + restResponse);
-}</camunda:script>
-        </camunda:executionListener>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0apduer</bpmn:incoming>
-      <bpmn:outgoing>Flow_0iy8ckw</bpmn:outgoing>
-    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1bjksi2" sourceRef="Activity_0ochenw" targetRef="Event_0ogbi7l" />
+    <bpmn:sequenceFlow id="Flow_1gq1m1h" name="Yes" sourceRef="Gateway_0w0374t" targetRef="Activity_0ochenw">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${informative}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1v0szac" name="No" sourceRef="Gateway_0w0374t" targetRef="Event_0ogbi7l" />
-    <bpmn:sequenceFlow id="Flow_1gq1m1h" name="Yes" sourceRef="Gateway_0w0374t" targetRef="Activity_0ochenw" />
-    <bpmn:exclusiveGateway id="Gateway_0w0374t" name="Is prediction informative?">
-      <bpmn:incoming>Flow_0j2jtls</bpmn:incoming>
-      <bpmn:outgoing>Flow_1v0szac</bpmn:outgoing>
-      <bpmn:outgoing>Flow_1gq1m1h</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0j2jtls" sourceRef="Activity_0mqdxdw" targetRef="Gateway_0w0374t" />
+    <bpmn:sequenceFlow id="Flow_0iy8ckw" sourceRef="Activity_0c2wu1w" targetRef="Activity_0mqdxdw" />
+    <bpmn:endEvent id="Event_0ogbi7l" name="End">
+      <bpmn:incoming>Flow_1bjksi2</bpmn:incoming>
+      <bpmn:incoming>Flow_1v0szac</bpmn:incoming>
+    </bpmn:endEvent>
     <bpmn:serviceTask id="Activity_0mqdxdw" name="Save prediction" camunda:asyncBefore="true">
       <bpmn:extensionElements>
         <camunda:connector>
@@ -81,15 +45,15 @@
             <camunda:inputParameter name="headers">
               <camunda:map>
                 <camunda:entry key="Content-Type">application/json</camunda:entry>
-                <camunda:entry key="Authorization">Bearer ${token.prop("token").stringValue()}</camunda:entry>
+                <camunda:entry key="Authorization">Bearer ${token}</camunda:entry>
               </camunda:map>
             </camunda:inputParameter>
             <camunda:inputParameter name="method">POST</camunda:inputParameter>
-            <camunda:inputParameter name="url">${SPIS_INT_API_URL}/cislaPodnikov/naplnenieCiselnejMnoziny</camunda:inputParameter>
+            <camunda:inputParameter name="url">${pepUrl}/prediction</camunda:inputParameter>
             <camunda:inputParameter name="payload">{
-  "processInstanceId": "${execution.processInstanceId}",
-  "cislaPodnikovIds": "${cislaPodnikovIds}",
-  "kodSablony": "SAB_SS_OSČ_09"
+  "informative": ${informative},
+  "confidence": ${confidence},
+  "predictionText": "${text}"
 }</camunda:inputParameter>
             <camunda:outputParameter name="restResponse">#{response}</camunda:outputParameter>
             <camunda:outputParameter name="statusCode">#{statusCode}</camunda:outputParameter>
@@ -99,7 +63,11 @@
         <camunda:executionListener event="end">
           <camunda:script scriptFormat="javascript">if(statusCode != 200){
   throw new java.lang.Exception("Chyba služby! Status code " + statusCode + " response: " + restResponse);
-}</camunda:script>
+}
+
+const responseObject = JSON.parse(restResponse);
+const predictionId = responseObject.id;
+execution.setVariable('predictionId', predictionId);</camunda:script>
         </camunda:executionListener>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0iy8ckw</bpmn:incoming>
@@ -108,32 +76,65 @@
         <bpmn:targetRef>DataStoreReference_0rl75jx</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_0j2jtls" sourceRef="Activity_0mqdxdw" targetRef="Gateway_0w0374t" />
+    <bpmn:exclusiveGateway id="Gateway_0w0374t" name="Is prediction informative?" default="Flow_1v0szac">
+      <bpmn:incoming>Flow_0j2jtls</bpmn:incoming>
+      <bpmn:outgoing>Flow_1v0szac</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1gq1m1h</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Activity_0c2wu1w" name="Get prediction" camunda:asyncBefore="true">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+                <camunda:entry key="Authorization">Bearer ${token}</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="url">${pepUrl}/prediction/predictService</camunda:inputParameter>
+            <camunda:inputParameter name="payload">{
+  "data": ["${text}"]
+}</camunda:inputParameter>
+            <camunda:outputParameter name="restResponse">#{response}</camunda:outputParameter>
+            <camunda:outputParameter name="statusCode">#{statusCode}</camunda:outputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+        <camunda:executionListener event="end">
+          <camunda:script scriptFormat="javascript">if(statusCode != 200){
+  throw new java.lang.Exception("Chyba služby! Status code " + statusCode + " response: " + restResponse);
+}
+
+const responseObject = JSON.parse(restResponse);
+const confidence = responseObject.confidence;
+let informative = false;
+
+if (responseObject.binary_label === 1) {
+    informative = true;
+}
+
+execution.setVariable('confidence', confidence);
+execution.setVariable('informative', informative);</camunda:script>
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0apduer</bpmn:incoming>
+      <bpmn:outgoing>Flow_0iy8ckw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="Event_17yzurg" name="Start">
+      <bpmn:extensionElements />
+      <bpmn:outgoing>Flow_0apduer</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:dataStoreReference id="DataStoreReference_0rl75jx" name="DB" />
     <bpmn:callActivity id="Activity_0ochenw" name="P_02 Entity recieving" camunda:asyncBefore="true" calledElement="EntityRecieving">
       <bpmn:documentation>Upravi sa aby sa dala pridat priloha</bpmn:documentation>
       <bpmn:extensionElements>
-        <camunda:inputOutput>
-          <camunda:inputParameter name="subjektId">${subjektId}</camunda:inputParameter>
-          <camunda:inputParameter name="UTStepperNazov">Oznámenie o zaevidovaní vrátenia čísel</camunda:inputParameter>
-          <camunda:inputParameter name="kodSablony">SAB_SS_OSČ_16</camunda:inputParameter>
-          <camunda:inputParameter name="updatePremenneRegZaznamuJSONData">${updatePremenneRegZaznamuJSONData}</camunda:inputParameter>
-        </camunda:inputOutput>
         <camunda:in variables="all" />
-        <camunda:executionListener event="start">
-          <camunda:script scriptFormat="javascript">execution.setVariable("isSablonaAutomaticka", false);
-execution.setVariable("testSkipTaskov", false);</camunda:script>
-        </camunda:executionListener>
-        <camunda:out source="dokumentRegistraturnyZaznamId" target="dokumentRegistraturnyZaznamId" />
+        <camunda:out variables="all" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1gq1m1h</bpmn:incoming>
       <bpmn:outgoing>Flow_1bjksi2</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:sequenceFlow id="Flow_1bjksi2" sourceRef="Activity_0ochenw" targetRef="Event_0ogbi7l" />
-    <bpmn:endEvent id="Event_0ogbi7l" name="End">
-      <bpmn:incoming>Flow_1v0szac</bpmn:incoming>
-      <bpmn:incoming>Flow_1bjksi2</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:dataStoreReference id="DataStoreReference_0rl75jx" name="DB" />
   </bpmn:process>
   <bpmn:message id="Message_0v0f2h7" name="Message_0v0f2h7" />
   <bpmn:message id="Message_1pjkk9q" name="Message_1pjkk9q" />
@@ -150,81 +151,81 @@ execution.setVariable("testSkipTaskov", false);</camunda:script>
       <bpmndi:BPMNShape id="Lane_0ylq0gp_di" bpmnElement="Lane_0ylq0gp" isHorizontal="true">
         <dc:Bounds x="189" y="79" width="911" height="391" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0v05r8t_di" bpmnElement="Event_17yzurg">
-        <dc:Bounds x="242" y="232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="249" y="275" width="25" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_16fw7o6" bpmnElement="Activity_0c2wu1w">
-        <dc:Bounds x="370" y="210" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0w0374t_di" bpmnElement="Gateway_0w0374t" isMarkerVisible="true">
-        <dc:Bounds x="685" y="225" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="679" y="187.5" width="61" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0jlmni5" bpmnElement="Activity_0mqdxdw">
-        <dc:Bounds x="520" y="210" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_1615vu9" bpmnElement="Activity_0ochenw">
-        <dc:Bounds x="830" y="210" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0ogbi7l_di" bpmnElement="Event_0ogbi7l">
         <dc:Bounds x="1032" y="232" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1040" y="208" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DataStoreReference_0rl75jx_di" bpmnElement="DataStoreReference_0rl75jx">
-        <dc:Bounds x="540" y="375" width="50" height="50" />
+      <bpmndi:BPMNShape id="BPMNShape_0jlmni5" bpmnElement="Activity_0mqdxdw">
+        <dc:Bounds x="520" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0w0374t_di" bpmnElement="Gateway_0w0374t" isMarkerVisible="true">
+        <dc:Bounds x="685" y="225" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="557" y="432" width="16" height="14" />
+          <dc:Bounds x="679" y="188" width="61" height="27" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_16fw7o6" bpmnElement="Activity_0c2wu1w">
+        <dc:Bounds x="370" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0v05r8t_di" bpmnElement="Event_17yzurg">
+        <dc:Bounds x="242" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="249" y="275" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_0rl75jx_di" bpmnElement="DataStoreReference_0rl75jx">
+        <dc:Bounds x="545" y="375" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="562" y="432" width="16" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1615vu9" bpmnElement="Activity_0ochenw">
+        <dc:Bounds x="890" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0apduer_di" bpmnElement="Flow_0apduer">
         <di:waypoint x="278" y="250" />
         <di:waypoint x="370" y="250" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0iy8ckw_di" bpmnElement="Flow_0iy8ckw">
-        <di:waypoint x="470" y="250" />
-        <di:waypoint x="520" y="250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1v0szac_di" bpmnElement="Flow_1v0szac">
-        <di:waypoint x="710" y="275" />
-        <di:waypoint x="710" y="330" />
-        <di:waypoint x="1050" y="330" />
-        <di:waypoint x="1050" y="268" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="850" y="339" width="15" height="14" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNEdge id="Flow_1bjksi2_di" bpmnElement="Flow_1bjksi2">
+        <di:waypoint x="990" y="250" />
+        <di:waypoint x="1032" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1gq1m1h_di" bpmnElement="Flow_1gq1m1h">
         <di:waypoint x="735" y="250" />
-        <di:waypoint x="830" y="250" />
+        <di:waypoint x="890" y="250" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="771" y="232" width="18" height="14" />
+          <dc:Bounds x="783" y="232" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1v0szac_di" bpmnElement="Flow_1v0szac">
+        <di:waypoint x="710" y="275" />
+        <di:waypoint x="710" y="370" />
+        <di:waypoint x="1050" y="370" />
+        <di:waypoint x="1050" y="268" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="882" y="459" width="15" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0j2jtls_di" bpmnElement="Flow_0j2jtls">
         <di:waypoint x="620" y="250" />
         <di:waypoint x="685" y="250" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1bjksi2_di" bpmnElement="Flow_1bjksi2">
-        <di:waypoint x="930" y="250" />
-        <di:waypoint x="1032" y="250" />
+      <bpmndi:BPMNEdge id="Flow_0iy8ckw_di" bpmnElement="Flow_0iy8ckw">
+        <di:waypoint x="470" y="250" />
+        <di:waypoint x="520" y="250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Participant_1susnnf_di" bpmnElement="Participant_1susnnf" isHorizontal="true">
         <dc:Bounds x="129" y="510" width="971" height="60" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DataOutputAssociation_0n5henr_di" bpmnElement="DataOutputAssociation_0n5henr">
-        <di:waypoint x="570" y="290" />
-        <di:waypoint x="570" y="375" />
+        <di:waypoint x="571" y="290" />
+        <di:waypoint x="574" y="375" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ataylt_di" bpmnElement="Flow_1ataylt">
         <di:waypoint x="420" y="290" />

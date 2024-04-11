@@ -37,10 +37,10 @@ public class PredictionConverter extends AbstractConverter<PredictionInput, Pred
         predictionOutput.setConfidence(entity.getConfidence());
         predictionOutput.setPredictionText(entity.getPredictionText());
         predictionOutput.setCreatedAt(entity.getCreatedAt());
-        predictionOutput.setUpdatedAt(entity.getUpdatedAt());
-        predictionOutput.setRating(entity.getRating());
-        predictionOutput.setLinks(linkConverter.convertToOutputList(entity.getLinks()));
-        predictionOutput.setEntities(dbEntityConverter.convertToOutputList(entity.getEntities()));
+        predictionOutput.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt() : null);
+        predictionOutput.setRating(entity.getRating() != null ? entity.getRating() : null);
+        predictionOutput.setLinks(entity.getLinks() != null ? linkConverter.convertToOutputList(entity.getLinks()) : null);
+        predictionOutput.setEntities(entity.getEntities() != null ? dbEntityConverter.convertToOutputList(entity.getEntities()) : null);
         return predictionOutput;
     }
 }

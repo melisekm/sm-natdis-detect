@@ -1,4 +1,4 @@
-package com.pep.ProxyEntryPoint.config.security;
+package com.pep.ProxyEntryPoint.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
