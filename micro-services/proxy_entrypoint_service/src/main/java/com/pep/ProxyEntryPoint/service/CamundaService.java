@@ -67,4 +67,8 @@ public class CamundaService {
     public VariableValueDto createVariableValue(Object value, String type) {
         return new VariableValueDto().value(value).type(type);
     }
+
+    public Map<String, VariableValueDto> getProcessInstanceVariables(String processInstanceId) throws ApiException {
+        return processInstanceApi.getProcessInstanceVariables(processInstanceId, null);
+    }
 }
