@@ -71,4 +71,12 @@ public class CamundaService {
     public Map<String, VariableValueDto> getProcessInstanceVariables(String processInstanceId) throws ApiException {
         return processInstanceApi.getProcessInstanceVariables(processInstanceId, null);
     }
+
+    public void submitUserTask(String taskId, CamundaStartProcessInputList input) throws ApiException {
+        Map<String, VariableValueDto> variables = new HashMap<>();
+        for (CamundaStartProcessInput camundaStartProcessInput : input.getVariableList()) {
+            variables.put(camundaStartProcessInput.getName(), new VariableValueDto().value(camundaStartProcessInput.getValue()));
+        }
+        submitUserTask(taskId, variables);
+    }
 }

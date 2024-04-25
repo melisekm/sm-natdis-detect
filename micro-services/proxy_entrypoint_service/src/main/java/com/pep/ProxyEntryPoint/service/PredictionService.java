@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,8 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
     private final DbEntityService dbEntityService;
     private final LinkService linkService;
     private final CamundaService camundaService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaService kafkaService;
 
     @Value("${predict.service.url}")
     private String predictServiceUrl;
@@ -57,7 +60,9 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
                                 JmsTemplate jmsTemplate,
                                 DbEntityService dbEntityService,
                                 LinkService linkService,
-                                CamundaService camundaService) {
+                                CamundaService camundaService,
+                                KafkaTemplate<String, String> kafkaTemplate,
+                                KafkaService kafkaService) {
         super(predictionRepository, predictionConverter);
         this.predictionRepository = predictionRepository;
         this.predictionConverter = predictionConverter;
@@ -66,6 +71,8 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
         this.dbEntityService = dbEntityService;
         this.linkService = linkService;
         this.camundaService = camundaService;
+        this.kafkaTemplate = kafkaTemplate;
+        this.kafkaService = kafkaService;
     }
 
     @Override
@@ -193,7 +200,7 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
         return prediction.getId();
     }
 
-    private DbEntitySaveEntitiesInputList setDbEntitySaveEntitiesInputList(DbEntityGetFromNerGroups groups, Long linkId) {
+    public DbEntitySaveEntitiesInputList setDbEntitySaveEntitiesInputList(DbEntityGetFromNerGroups groups, Long linkId) {
         DbEntitySaveEntitiesInputList dbEntitySaveEntitiesInputList = new DbEntitySaveEntitiesInputList();
         List<DbEntitySaveEntitiesInput> inputList = new ArrayList<>();
         dbEntitySaveEntitiesInputList.setInputList(inputList);
@@ -242,4 +249,9 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
         variablesTask.put("input", new VariableValueDto().value(input).type("String"));
         camundaService.submitUserTask(taskDto.getId(), variablesTask);
     }
+
+    public void sendPredictionToKafka(String message) {
+        kafkaService.sendPredictionToKafka(message);
+    }
+
 }

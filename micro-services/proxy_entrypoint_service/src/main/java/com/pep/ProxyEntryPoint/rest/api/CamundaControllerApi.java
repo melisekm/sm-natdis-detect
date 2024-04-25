@@ -76,4 +76,32 @@ public interface CamundaControllerApi {
     ) {
         return new HashMap<>();
     }
+
+    @Operation(
+            operationId = "submitUserTask",
+            tags = {TAG},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Operation successful.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    }),
+                    @ApiResponse(responseCode = "403", description = "Forbidden.", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                    })
+            }
+    )
+    @PostMapping(
+            value = "/camunda/submitUserTask/{taskId}",
+            produces = {"application/json"}
+    )
+    default void submitUserTask(
+            @PathVariable String taskId,
+            @RequestBody CamundaStartProcessInputList body
+    ) {
+    }
 }
