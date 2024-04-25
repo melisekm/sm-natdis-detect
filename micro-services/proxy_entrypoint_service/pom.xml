@@ -38,8 +38,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-activemq</artifactId>
 		</dependency>
-<!--		camunda-->
-
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+			<version>3.1.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.camunda.community</groupId>
 			<artifactId>camunda-engine-rest-client-complete-springboot-starter</artifactId>
@@ -106,6 +109,13 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.baeldung.spring.kafka.KafkaApplication</mainClass>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
