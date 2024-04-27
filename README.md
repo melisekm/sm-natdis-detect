@@ -3,7 +3,7 @@
 AASS FIIT 2024
 
 ## Overview
-![Build Status](assets/api_diagram.png)
+![API DIAGRAM](assets/api_diagram.png)
 
 ## Setup
 Create docker network
@@ -112,7 +112,17 @@ The system uses deep learning models to filter informative posts from social med
     - Downloads data from articles included in the sm posts
 
 ### Event-driven architecture
-TBA
+- Kafka
+- 4 topics
+- Automatically created
+- Architecture:
+![Kafka Diagram](assets/kafka_diagram.png)
 
-### Camunda
-TBA
+### Camunda BPMN
+- Camunda v7
+- Install https://camunda.com/download/modeler/ Camunda modeler
+- Open all processes in the modeler
+- Start all services
+- Deploy processes on URI http://localhost:8081/engine-rest
+- Make prediction and observe in the cockpit
+- Optionally rate the prediction
