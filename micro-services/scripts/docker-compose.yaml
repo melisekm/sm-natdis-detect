@@ -82,9 +82,18 @@ services:
     volumes:
       - "../../natdis-detect-fe/natdis/dcesm:/code/dcesm"
 
+  # CAMUNDA
+  camunda:
+    container_name: natdis-camunda
+    image: camunda/camunda-bpm-platform:run-latest
+    ports:
+      - ${CAMUNDA_PORT_EXPOSE:-8081}:8080
+
 volumes:
   aass_db_data:
     name: aass_db_data
+  aass_camunda_data:
+    name: aass_camunda_data
 
 networks:
   default:
