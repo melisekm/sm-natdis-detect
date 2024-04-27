@@ -27,3 +27,13 @@ def extract_urls(request: TextRequest) -> list[URLResponse]:
     if isinstance(request.data, str):
         request.data = [request.data]
     return [URLResponse(urls=Extractor.instance.extract_urls(text)) for text in request.data]
+
+
+def handle_dl(data: str | list[str]) -> list[ExtractionResult]:
+    if isinstance(data, str):
+        data = [data]
+    return [
+        Extractor.instance.download(url)
+        for text in data
+        for url in Extractor.instance.extract_urls(text)
+    ]

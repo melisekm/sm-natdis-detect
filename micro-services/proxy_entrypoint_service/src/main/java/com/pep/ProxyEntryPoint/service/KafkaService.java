@@ -157,6 +157,7 @@ public class KafkaService {
     public void listenDb(String message) throws Exception {
         System.out.println("Received Message in group: " + message);
         KafkaInputMessageDto kafkaInputMessageDto = Base64Utils.decodeFromBase64(message, KafkaInputMessageDto.class);
+        System.out.println("Decoded message: " + kafkaInputMessageDto);
         switch (kafkaInputMessageDto.getObjectType()) {
             case "prediction":
                 this.handlePrediction(kafkaInputMessageDto);
@@ -204,7 +205,6 @@ public class KafkaService {
     }
 
     private void handleNER(KafkaInputMessageDto kafkaInputMessageDto) throws Exception {
-        System.out.println("Received Message in group: " + kafkaInputMessageDto);
         LinkedHashMap<String, Object> linkedHashMap = Base64Utils.decodeFromBase64(kafkaInputMessageDto.getObjectBase64(), LinkedHashMap.class);
         System.out.println("Received linkedhashmap from NER: " + linkedHashMap);
         DbEntityGetFromNerOutput output = ApiClientUtils.convertSingleLinkedHashMapToObject(linkedHashMap, DbEntityGetFromNerOutput.class);
@@ -237,27 +237,28 @@ public class KafkaService {
     }
 
     private void handleLink(KafkaInputMessageDto kafkaInputMessageDto) throws Exception {
-        LinkDownloadOutputList linkDownloadOutputList = Base64Utils.decodeFromBase64(kafkaInputMessageDto.getObjectBase64(), LinkDownloadOutputList.class);
-        if (linkDownloadOutputList.getOutputList().isEmpty()) {
-            return;
-        }
+        LinkedHashMap<String, Object> linkedHashMap = Base64Utils.decodeFromBase64(kafkaInputMessageDto.getObjectBase64(), LinkedHashMap.class);
+        System.out.println("Received linkedhashmap from Link: " + linkedHashMap);
+        LinkDownloadOutput linkDownloadOutput = linkService.convertSingleLinkDownloadOutput(linkedHashMap);
+        System.out.println("Received link from Link: " + linkDownloadOutput);
 
         List<LinkInput> linkInputList = new ArrayList<>();
-        for (LinkDownloadOutput linkDownloadOutput : linkDownloadOutputList.getOutputList()) {
-            LinkInput linkInput = LinkInput.builder()
-                    .originUrl(linkDownloadOutput.getOriginUrl())
-                    .finalUrl(linkDownloadOutput.getFinalUrl())
-                    .text(linkDownloadOutput.getText())
-                    .html(linkDownloadOutput.getHtml())
-                    .title(linkDownloadOutput.getTitle())
-                    .otherInfo(linkDownloadOutput.getOtherInfo())
-                    .domain(linkDownloadOutput.getDomain())
-                    .publishedAt(linkDownloadOutput.getPublishedAt())
-                    .extractedAt(linkDownloadOutput.getExtractedAt())
-                    .build();
-            linkInputList.add(linkInput);
-        }
+        LinkInput linkInput = LinkInput.builder()
+                .originUrl(linkDownloadOutput.getOriginUrl())
+                .finalUrl(linkDownloadOutput.getFinalUrl())
+                .text(linkDownloadOutput.getText())
+                .html(linkDownloadOutput.getHtml())
+                .title(linkDownloadOutput.getTitle())
+                .otherInfo(linkDownloadOutput.getOtherInfo())
+                .domain(linkDownloadOutput.getDomain())
+                .publishedAt(linkDownloadOutput.getPublishedAt())
+                .extractedAt(linkDownloadOutput.getExtractedAt())
+                .build();
+
+        linkInputList.add(linkInput);
+        System.out.println("Saving links to DB. PredictionId: " + kafkaInputMessageDto.getPredictionId() + " LinkInput: " + linkInputList);
         List<LinkOutput> savedLinks = linkService.saveLinksToPrediction(linkInputList, kafkaInputMessageDto.getPredictionId());
+        System.out.println("Saved links to DB. Sending NER request for each link text.");
 
         for (LinkOutput linkOutput : savedLinks) {
             DataInput dataLinkEntitiesInput = new DataInput();
@@ -267,7 +268,9 @@ public class KafkaService {
                     .linkId(linkOutput.getId())
                     .dataInput(dataLinkEntitiesInput)
                     .build();
+            System.out.println("Sending message to NER topic" + kafkaOutputMessageDto);
             sendMessageToKafka(this.nerTopic, Base64Utils.encodeToBase64(kafkaOutputMessageDto));
+            System.out.println("Sent message to NER topic");
         }
     }
 }
