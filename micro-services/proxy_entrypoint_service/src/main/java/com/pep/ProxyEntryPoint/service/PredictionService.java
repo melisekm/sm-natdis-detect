@@ -250,8 +250,4 @@ public class PredictionService extends AbstractService<PredictionInput, Predicti
         camundaService.submitUserTask(taskDto.getId(), variablesTask);
     }
 
-    public void sendPredictionToKafka(String message) {
-        kafkaService.sendPredictionToKafka(message);
-    }
-
 }
