@@ -1,3 +1,13 @@
+x-aass-common:
+  &aass-common
+  environment:
+    &aass-common-env
+    KAFKA_URI: ${KAFKA_URI:-natdis-kafka:29092}
+    KAFKA_PREDICTION_TOPIC: ${KAFKA_PREDICTION_TOPIC:-predictionTopic}
+    KAFKA_NER_TOPIC: ${KAFKA_NER_TOPIC:-NERTopic}
+    KAFKA_LINK_TOPIC: ${KAFKA_LINK_TOPIC:-linkTopic}
+    KAFKA_DB_TOPIC: ${KAFKA_DB_TOPIC:-dbObjectsTopic}
+
 services:
 
   # ENTRYPOINT API SERVICE
@@ -7,19 +17,16 @@ services:
       context: ../proxy_entrypoint_service
       dockerfile: Dockerfile
     environment:
-      - SERVER_PORT=8080
-      - DATASOURCE_USER=${POSTGRES_USER:-postgres}
-      - DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-root}
-      - DATASOURCE_URL=jdbc:postgresql://proxy_entrypoint_db:5432/${POSTGRES_DB:-aass}
-      - PREDICT_SERVICE_URI=${PREDICT_SERVICE_URI:-http://predict_service:8000}
-      - NER_SERVICE_URI=${NER_SERVICE_URI:-http://ner_service:8000}
-      - DL_SERVICE_URI=${DL_SERVICE_URI:-http://dl_service:8000}
-      - CAMUNDA_URI=${CAMUNDA_URI:-http://natdis-camunda:8080/engine-rest}
-      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
-      - KAFKA_PREDICTION_TOPIC=${KAFKA_PREDICTION_TOPIC:-predictionTopic}
-      - KAFKA_NER_TOPIC=${KAFKA_NER_TOPIC:-NERTopic}
-      - KAFKA_LINK_TOPIC=${KAFKA_LINK_TOPIC:-linkTopic}
-      - KAFKA_DB_TOPIC=${KAFKA_DB_TOPIC:-dbObjectsTopic}
+      <<: *aass-common-env
+      SERVER_PORT: 8080
+      DATASOURCE_USER: ${POSTGRES_USER:-postgres}
+      DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-root}
+      DATASOURCE_URL: jdbc:postgresql://proxy_entrypoint_db:5432/${POSTGRES_DB:-aass}
+      PREDICT_SERVICE_URI: ${PREDICT_SERVICE_URI:-http://predict_service:8000}
+      NER_SERVICE_URI: ${NER_SERVICE_URI:-http://ner_service:8000}
+      DL_SERVICE_URI: ${DL_SERVICE_URI:-http://dl_service:8000}
+      CAMUNDA_URI: ${CAMUNDA_URI:-http://natdis-camunda:8080/engine-rest}
+
     ports:
       - ${ENTRYPOINT_PORT_EXPOSE:-8080}:8080
     depends_on:
@@ -47,7 +54,8 @@ services:
     env_file:
       - .predict_env
     environment:
-      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
+      <<: *aass-common-env
+
     volumes:
       - ../predict_service:/workspace
 
@@ -61,7 +69,8 @@ services:
     env_file:
       - .ner_env
     environment:
-      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
+      <<: *aass-common-env
+
     volumes:
       - ../ner_service:/workspace
 
@@ -71,8 +80,7 @@ services:
       context: ../dl_service
       dockerfile: Dockerfile
     environment:
-      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
-      - KAFKA_DL_TOPIC=${KAFKA_TOPIC:-DLTopic}
+      <<: *aass-common-env
     ports:
       - ${DL_SERVICE_PORT_EXPOSE:-8012}:8000
     volumes:
@@ -85,12 +93,12 @@ services:
       context: ../../natdis-detect-fe/natdis
       dockerfile: Dockerfile
     environment:
-      - TZ=Europe/Bratislava
-      - API_HOST=${DJANGO_API_HOST:-http://proxy-entrypoint-service:8080}
-      - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
-      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
-      - KEYCLOAK_GRANT_TYPE=${KEYCLOAK_GRANT_TYPE}
-      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
+      <<: *aass-common-env
+      TZ: Europe/Bratislava
+      API_HOST: ${DJANGO_API_HOST:-http://proxy-entrypoint-service:8080}
+      KEYCLOAK_AUTH_URL: ${KEYCLOAK_AUTH_URL}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_GRANT_TYPE: ${KEYCLOAK_GRANT_TYPE}
     ports:
       - ${DJANGO_PORT_EXPOSE:-8180}:8000
     volumes:

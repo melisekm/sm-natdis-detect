@@ -1,5 +1,7 @@
 from typing import Literal
 
+from django.conf import settings
+
 
 class APIProperties:
     def __init__(self, api_host: str):

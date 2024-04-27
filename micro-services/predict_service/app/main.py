@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 
@@ -6,7 +7,9 @@ from fastapi import FastAPI
 from app import get_path
 from app.model import NaturalDisBert
 from app.routes import router
+from app.kafka_impl import consume
 
+loop = asyncio.get_event_loop()
 app = FastAPI(
     title="AASS Predict Service",
     description="Predicts whetever the social media "
@@ -33,6 +36,9 @@ def prepare_model():
         )
     NaturalDisBert(model_path, os.getenv("DEVICE", "cpu"))
     logging.info("Model ready")
+
+
+asyncio.create_task(consume(loop))
 
 
 @app.get("/")

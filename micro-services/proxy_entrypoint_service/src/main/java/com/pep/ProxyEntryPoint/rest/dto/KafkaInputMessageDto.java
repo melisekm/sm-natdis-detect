@@ -8,6 +8,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 public class KafkaInputMessageDto {
+    private String message;
     private String objectType;
     private Long predictionId;
     private Long linkId;

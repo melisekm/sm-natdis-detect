@@ -4,6 +4,7 @@ import com.pep.ProxyEntryPoint.converter.PredictionConverter;
 import com.pep.ProxyEntryPoint.model.entity.Prediction;
 import com.pep.ProxyEntryPoint.model.repository.PredictionRepository;
 import com.pep.ProxyEntryPoint.rest.dto.*;
+import com.pep.ProxyEntryPoint.util.ApiClientUtils;
 import com.pep.ProxyEntryPoint.util.Base64Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -169,12 +171,22 @@ public class KafkaService {
 
     }
 
-    private void handlePrediction(KafkaInputMessageDto kafkaInputMessageDto) {
-        PredictionInput predictionInput = Base64Utils.decodeFromBase64(kafkaInputMessageDto.getObjectBase64(), PredictionInput.class);
+    private void handlePrediction(KafkaInputMessageDto kafkaInputMessageDto) throws Exception {
+        LinkedHashMap<String, Object> linkedHashMap = Base64Utils.decodeFromBase64(kafkaInputMessageDto.getObjectBase64(), LinkedHashMap.class);
+        System.out.println("Received linkedhashmap from predict service: " + linkedHashMap);
+        PredictionPredictServiceOutput output = ApiClientUtils.convertSingleLinkedHashMapToObject(linkedHashMap, PredictionPredictServiceOutput.class);
+        System.out.println("Received prediction from predict service: " + output);
+        PredictionInput predictionInput = new PredictionInput();
+        predictionInput.setPredictionText(kafkaInputMessageDto.getMessage());
+        predictionInput.setConfidence(output.getConfidence());
+        predictionInput.setInformative(output.getBinaryLabel() == 1);
+        System.out.println(predictionInput);
         Prediction predictionEntityInput = predictionConverter.convertToEntity(predictionInput);
         predictionEntityInput.setCreatedAt(LocalDateTime.now());
         Prediction prediction = predictionRepository.save(predictionEntityInput);
+        System.out.println("Saved prediction to DB: " + prediction);
         if (Boolean.FALSE.equals(prediction.getInformative())) {
+            System.out.println("Prediction is not informative. Skipping NER and Link");
             return;
         }
 
@@ -184,13 +196,27 @@ public class KafkaService {
                 .predictionId(prediction.getId())
                 .dataInput(dataInput)
                 .build();
+        System.out.println("Sending message to NER topic" + kafkaOutputMessageDto + " " + kafkaOutputMessageDto.getDataInput().getData());
         sendMessageToKafka(this.nerTopic, Base64Utils.encodeToBase64(kafkaOutputMessageDto));
+        System.out.println("Sent message to NER topic");
     }
 
     private void handleNER(KafkaInputMessageDto kafkaInputMessageDto) throws Exception {
-        DbEntityGetFromNerGroups groups = Base64Utils.decodeFromBase64(kafkaInputMessageDto.getObjectBase64(), DbEntityGetFromNerGroups.class);
-        dbEntityService.saveEntities(kafkaInputMessageDto.getPredictionId(), predictionService.setDbEntitySaveEntitiesInputList(groups, kafkaInputMessageDto.getLinkId()));
+        System.out.println("Received Message in group: " + kafkaInputMessageDto);
+        LinkedHashMap<String, Object> linkedHashMap = Base64Utils.decodeFromBase64(kafkaInputMessageDto.getObjectBase64(), LinkedHashMap.class);
+        System.out.println("Received linkedhashmap from NER: " + linkedHashMap);
+        DbEntityGetFromNerOutput output = ApiClientUtils.convertSingleLinkedHashMapToObject(linkedHashMap, DbEntityGetFromNerOutput.class);
+        System.out.println("Received entities from NER: " + output);
+        dbEntityService.saveEntities(
+                kafkaInputMessageDto.getPredictionId(),
+                predictionService.setDbEntitySaveEntitiesInputList(
+                        output.getGroups(),
+                        kafkaInputMessageDto.getLinkId()
+                )
+        );
+        System.out.println("Saved entities to DB");
         Prediction prediction = predictionRepository.findById(kafkaInputMessageDto.getPredictionId()).orElseThrow();
+        System.out.println("Found prediction: " + prediction);
 
         DataInput dataInput = new DataInput();
         dataInput.setData(List.of(prediction.getPredictionText()));
@@ -198,7 +224,9 @@ public class KafkaService {
                 .predictionId(kafkaInputMessageDto.getPredictionId())
                 .dataInput(dataInput)
                 .build();
+        System.out.println("Sending message to Link topic" + kafkaOutputMessageDto);
         sendMessageToKafka(this.linkTopic, Base64Utils.encodeToBase64(kafkaOutputMessageDto));
+        System.out.println("Sent message to Link topic");
     }
 
     private void handleLink(KafkaInputMessageDto kafkaInputMessageDto) throws Exception {

@@ -17,10 +17,13 @@ def predict(request: TextRequest, add_html_highlight: bool = False) -> list[NERR
     Html Highligh is not returned by default, but can be requested by setting add_html_highlight to True.
     It is a standalone fully functional HTML code with tags that can be used to display the entities in a web page.
     """
-    if isinstance(request.data, str):
-        request.data = [request.data]
+    return handle_ner(request.data, add_html_highlight)
+
+def handle_ner(data: str|list[str], add_html_highlight: bool = False) -> list[NERResponse]:
+    if isinstance(data, str):
+        data = [data]
     results = []
-    for text in request.data:
+    for text in data:
         result = NER.instance.analyze(text)
         results.append(
             NERResponse(

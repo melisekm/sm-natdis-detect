@@ -1,5 +1,8 @@
 import datetime
 import logging
+
+from confluent_kafka import Producer
+
 from typing import Literal
 
 import requests
@@ -20,7 +23,9 @@ class UnauthorizedError(Exception):
 class APIClient:
     def __init__(self):
         self.api_host = settings.API_HOST
+        self.kafka_prediction_topic = settings.KAFKA_PREDICTION_TOPIC
         self.api_properties = APIProperties(self.api_host)
+        self.kafka_producer = Producer({'bootstrap.servers': settings.KAFKA_URI})
         self.token = None
         self.token_expiration = None
         self.user = None
@@ -90,8 +95,9 @@ class APIClient:
         r.raise_for_status()
 
     def predict_kafka(self, text: str) -> None:
-        pass
-        # kafka_bootstrap_servers: str = os.environ.get("KAFKA_BOOTSTRAP_SERVERS")
+        logging.info(f"Producing message to Kafka: {text}")
+        self.kafka_producer.produce(self.kafka_prediction_topic, text)
+        self.kafka_producer.flush()
 
     def rate_prediction(self, prediction_id: int, rating: Literal['true', 'false']):
         r = self.make_base_post_request(

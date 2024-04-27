@@ -3,3 +3,4 @@ requests
 gunicorn
 pyjwt
 pydantic
+confluent_kafka

@@ -15,10 +15,14 @@ def predict(request: TextRequest) -> List[PredictionResponse]:
     informative to a natural disaster. Optionally accepts list of posts and returns list of predictions.
     The predictions consist of label named prediction result: either "Informative" or "Not informative",
     """
-    if isinstance(request.data, str):
-        request.data = [request.data]
+    return handle_prediction(request.data)
+
+
+def handle_prediction(data: list[str] | str) -> List[PredictionResponse]:
+    if isinstance(data, str):
+        data = [data]
     results = []
-    for text in request.data:
+    for text in data:
         result = NaturalDisBert.instance.infer(text)
         results.append(
             PredictionResponse(

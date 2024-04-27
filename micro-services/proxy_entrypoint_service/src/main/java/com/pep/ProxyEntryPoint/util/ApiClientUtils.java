@@ -18,4 +18,14 @@ public class ApiClientUtils {
 
         return objectMapper.readValue(json, targetType);
     }
+
+    public static <T> T convertSingleLinkedHashMapToObject(LinkedHashMap<String, Object> linkedHashMap, Class<T> targetType) throws Exception {
+        if (linkedHashMap == null) {
+            throw new IllegalArgumentException("List is null or empty");
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(linkedHashMap);
+
+        return objectMapper.readValue(json, targetType);
+    }
 }
