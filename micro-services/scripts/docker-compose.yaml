@@ -9,7 +9,6 @@ x-aass-common:
     KAFKA_DB_TOPIC: ${KAFKA_DB_TOPIC:-dbObjectsTopic}
 
 services:
-
   # ENTRYPOINT API SERVICE
   app:
     container_name: proxy-entrypoint-service
@@ -26,7 +25,6 @@ services:
       NER_SERVICE_URI: ${NER_SERVICE_URI:-http://ner_service:8000}
       DL_SERVICE_URI: ${DL_SERVICE_URI:-http://dl_service:8000}
       CAMUNDA_URI: ${CAMUNDA_URI:-http://natdis-camunda:8080/engine-rest}
-
     ports:
       - ${ENTRYPOINT_PORT_EXPOSE:-8080}:8080
     depends_on:
@@ -55,7 +53,6 @@ services:
       - .predict_env
     environment:
       <<: *aass-common-env
-
     volumes:
       - ../predict_service:/workspace
 

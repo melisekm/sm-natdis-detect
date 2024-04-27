@@ -22,36 +22,41 @@ async def consume(loop):
         return
     while True:
         logging.info('Starting consumer and producer')
-        consumer = AIOKafkaConsumer(
-            prediction_topic,
-            loop=loop,
-            bootstrap_servers=kafka_uri,
-        )
-        producer = AIOKafkaProducer(
-            bootstrap_servers=kafka_uri,
-        )
-
         try:
-            await producer.start()
-            await consumer.start()
-            logging.info('Consumer and producer started. Listening for messages..')
-            async for msg in consumer:
-                decoded_msg = msg.value.decode()
-                logging.info(f"Consumed message: {decoded_msg}")
-                predictions = handle_prediction(decoded_msg)
-                logging.info(f"Sent prediction to DB: {predictions}")
-                for prediction in predictions:
-                    await producer.send_and_wait(db_topic, encode_json(
-                        {
-                            'message': decoded_msg,
-                            'objectType': 'prediction',
-                            'objectBase64': encode_json(prediction.model_dump()).decode()
-                        }
-                    ))
-        finally:
-            await consumer.stop()
-            await producer.stop()
+            consumer = AIOKafkaConsumer(
+                prediction_topic,
+                loop=loop,
+                bootstrap_servers=kafka_uri,
+            )
+            producer = AIOKafkaProducer(
+                bootstrap_servers=kafka_uri,
+            )
+
+            try:
+                await producer.start()
+                await consumer.start()
+                logging.info('Consumer and producer started. Listening for messages..')
+                async for msg in consumer:
+                    decoded_msg = msg.value.decode()
+                    logging.info(f"Consumed message: {decoded_msg}")
+                    predictions = handle_prediction(decoded_msg)
+                    logging.info(f"Sent prediction to DB: {predictions}")
+                    for prediction in predictions:
+                        await producer.send_and_wait(db_topic, encode_json(
+                            {
+                                'message': decoded_msg,
+                                'objectType': 'prediction',
+                                'objectBase64': encode_json(prediction.model_dump()).decode()
+                            }
+                        ))
+            except Exception as e:
+                logging.exception(f'Error while consuming messages: {e}')
+            finally:
+                await consumer.stop()
+                await producer.stop()
+        except Exception as e:
+            logging.exception(f'Failed to create consumer and producer. Error: {e}')
 
         logging.info('Consumer and producer stopped')
-        logging.info('Restarting in 5 seconds')
-        await asyncio.sleep(5)
+        logging.info('Restarting in 10 seconds')
+        await asyncio.sleep(10)
