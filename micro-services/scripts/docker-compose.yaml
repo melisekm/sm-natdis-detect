@@ -16,6 +16,10 @@ services:
       - DL_SERVICE_URI=${DL_SERVICE_URI:-http://dl_service:8000}
       - CAMUNDA_URI=${CAMUNDA_URI:-http://natdis-camunda:8080/engine-rest}
       - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
+      - KAFKA_PREDICTION_TOPIC=${KAFKA_PREDICTION_TOPIC:-predictionTopic}
+      - KAFKA_NER_TOPIC=${KAFKA_NER_TOPIC:-NERTopic}
+      - KAFKA_LINK_TOPIC=${KAFKA_LINK_TOPIC:-linkTopic}
+      - KAFKA_DB_TOPIC=${KAFKA_DB_TOPIC:-dbObjectsTopic}
     ports:
       - ${ENTRYPOINT_PORT_EXPOSE:-8080}:8080
     depends_on:
@@ -42,6 +46,8 @@ services:
       - ${PREDICT_SERVICE_PORT_EXPOSE:-8010}:8000
     env_file:
       - .predict_env
+    environment:
+      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
     volumes:
       - ../predict_service:/workspace
 
@@ -54,6 +60,8 @@ services:
       - ${NER_SERVICE_PORT_EXPOSE:-8011}:8000
     env_file:
       - .ner_env
+    environment:
+      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
     volumes:
       - ../ner_service:/workspace
 
@@ -62,6 +70,9 @@ services:
     build:
       context: ../dl_service
       dockerfile: Dockerfile
+    environment:
+      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
+      - KAFKA_DL_TOPIC=${KAFKA_TOPIC:-DLTopic}
     ports:
       - ${DL_SERVICE_PORT_EXPOSE:-8012}:8000
     volumes:
@@ -79,6 +90,7 @@ services:
       - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
       - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
       - KEYCLOAK_GRANT_TYPE=${KEYCLOAK_GRANT_TYPE}
+      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
     ports:
       - ${DJANGO_PORT_EXPOSE:-8180}:8000
     volumes:
