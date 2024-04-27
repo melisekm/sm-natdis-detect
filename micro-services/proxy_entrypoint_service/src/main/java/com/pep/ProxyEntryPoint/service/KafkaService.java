@@ -6,6 +6,7 @@ import com.pep.ProxyEntryPoint.model.repository.PredictionRepository;
 import com.pep.ProxyEntryPoint.rest.dto.*;
 import com.pep.ProxyEntryPoint.util.ApiClientUtils;
 import com.pep.ProxyEntryPoint.util.Base64Utils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -152,6 +153,7 @@ public class KafkaService {
 //    }
 
     @KafkaListener(topics = "${db.topic}", groupId = "group")
+    @Transactional
     public void listenDb(String message) throws Exception {
         System.out.println("Received Message in group: " + message);
         KafkaInputMessageDto kafkaInputMessageDto = Base64Utils.decodeFromBase64(message, KafkaInputMessageDto.class);
@@ -215,7 +217,12 @@ public class KafkaService {
                 )
         );
         System.out.println("Saved entities to DB");
-        Prediction prediction = predictionRepository.findById(kafkaInputMessageDto.getPredictionId()).orElseThrow();
+        if (kafkaInputMessageDto.getLinkId() != null) {
+            System.out.println("LinkId is not null. Skipping recursive NER and Link retrieval.");
+            return;
+        }
+        System.out.println(kafkaInputMessageDto.getPredictionId());
+        Prediction prediction = predictionService.findEntityById(kafkaInputMessageDto.getPredictionId());
         System.out.println("Found prediction: " + prediction);
 
         DataInput dataInput = new DataInput();

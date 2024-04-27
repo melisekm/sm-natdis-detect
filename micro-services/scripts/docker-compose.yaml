@@ -70,7 +70,6 @@ services:
       - .ner_env
     environment:
       <<: *aass-common-env
-
     volumes:
       - ../ner_service:/workspace
 

@@ -19,7 +19,8 @@ def predict(request: TextRequest, add_html_highlight: bool = False) -> list[NERR
     """
     return handle_ner(request.data, add_html_highlight)
 
-def handle_ner(data: str|list[str], add_html_highlight: bool = False) -> list[NERResponse]:
+
+def handle_ner(data: str | list[str], add_html_highlight: bool = False) -> list[NERResponse]:
     if isinstance(data, str):
         data = [data]
     results = []
@@ -38,3 +39,4 @@ def handle_ner(data: str|list[str], add_html_highlight: bool = False) -> list[NE
             )
         )
     return results
+
