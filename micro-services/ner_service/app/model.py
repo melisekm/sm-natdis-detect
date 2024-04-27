@@ -7,7 +7,7 @@ from typing import Dict, List
 import spacy
 from spacy import displacy
 
-ner_grps_cols = ["DATE", "TIME", "ENTITY", "PLACE", "QUANTITY", "OTHER"]
+ner_grps_cols = ["DATE", "TIME", "ENTITY", "PLACE", "OTHER"]
 
 
 @dataclasses.dataclass
@@ -95,6 +95,4 @@ class SpacyNERModel:
             return f"ENTITY - {label}"
         if label in {"FAC", "ORG", "GPE", "LOC", "EVENT", "LANGUAGE"}:
             return f"PLACE - {label}"
-        if label in {"QUANTITY"}:
-            return f"QUANTITY - {label}"
         return f"OTHER - {label}"

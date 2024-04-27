@@ -58,9 +58,9 @@ class APIClient:
             params=params
         )
 
-    def predict(self, text: str) -> PredictionResponse | None:
+    def predict_microservices(self, text: str) -> PredictionResponse | None:
         r = self.make_base_post_request(
-            self.api_properties.create_prediction_url(),
+            self.api_properties.create_prediction_url('microservices'),
             data=text
         )
         r.raise_for_status()
@@ -70,6 +70,28 @@ class APIClient:
         )
         r.raise_for_status()
         return PredictionResponse(**r.json())
+
+    def predict_camunda(self, text: str) -> None:
+        r = self.make_base_post_request(
+            self.api_properties.create_prediction_url('camunda'),
+            json={
+                "variableList": [
+                    {
+                        "name": "text",
+                        "value": text,
+                    },
+                    {
+                        "name": "token",
+                        "value": self.get_authorization_token(),
+                    }
+                ]
+            }
+        )
+        r.raise_for_status()
+
+    def predict_kafka(self, text: str) -> None:
+        pass
+        # kafka_bootstrap_servers: str = os.environ.get("KAFKA_BOOTSTRAP_SERVERS")
 
     def rate_prediction(self, prediction_id: int, rating: Literal['true', 'false']):
         r = self.make_base_post_request(

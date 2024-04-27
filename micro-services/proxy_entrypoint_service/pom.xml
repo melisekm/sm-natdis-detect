@@ -113,7 +113,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>com.baeldung.spring.kafka.KafkaApplication</mainClass>
+					<mainClass>com.pep.ProxyEntryPoint.ProxyEntryPointApplication</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -14,6 +14,8 @@ services:
       - PREDICT_SERVICE_URI=${PREDICT_SERVICE_URI:-http://predict_service:8000}
       - NER_SERVICE_URI=${NER_SERVICE_URI:-http://ner_service:8000}
       - DL_SERVICE_URI=${DL_SERVICE_URI:-http://dl_service:8000}
+      - CAMUNDA_URI=${CAMUNDA_URI:-http://natdis-camunda:8080/engine-rest}
+      - KAFKA_URI=${KAFKA_URI:-http://natdis-kafka:29092}
     ports:
       - ${ENTRYPOINT_PORT_EXPOSE:-8080}:8080
     depends_on:
@@ -88,6 +90,39 @@ services:
     image: camunda/camunda-bpm-platform:run-latest
     ports:
       - ${CAMUNDA_PORT_EXPOSE:-8081}:8080
+
+  # KAFKA
+  kafka:
+    image: obsidiandynamics/kafka
+    container_name: natdis-kafka
+    restart: "no"
+    ports:
+      - "2181:2181"
+      - "9093:9093"
+    environment:
+      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9093"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+    healthcheck:
+      test: nc -z localhost 29092 || exit
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: natdis-kafka-ui
+    ports:
+      - "8090:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=natdis-kafka:29092
 
 volumes:
   aass_db_data:
