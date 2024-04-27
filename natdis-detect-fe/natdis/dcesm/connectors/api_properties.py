@@ -16,7 +16,7 @@ class APIProperties:
             case _:
                 raise ValueError(f"Invalid prediction type: {type_}")
 
-    def get_prediction_url(self, prediction_id: int):
+    def get_prediction_url(self, prediction_id: int | str):
         return self.api_host + f"/prediction/{prediction_id}"
 
     def get_rate_prediction_url(self, prediction_id: int, rating: str):

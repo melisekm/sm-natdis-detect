@@ -95,7 +95,6 @@ class APIClient:
         r.raise_for_status()
 
     def predict_kafka(self, text: str) -> None:
-        logging.info(f"Producing message to Kafka: {text}")
         self.kafka_producer.produce(self.kafka_prediction_topic, text)
         self.kafka_producer.flush()
 

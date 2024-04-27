@@ -19,7 +19,6 @@ import com.pep.ProxyEntryPoint.rest.dto.DataInput;
 import com.pep.ProxyEntryPoint.util.ApiClientUtils;
 import com.pep.ProxyEntryPoint.util.Base64Utils;
 import org.camunda.community.rest.client.invoker.ApiException;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -136,7 +135,6 @@ public class LinkService extends AbstractService<LinkInput, LinkOutput, Link, Lo
         return outputList;
     }
 
-    @NotNull
     public LinkDownloadOutput convertSingleLinkDownloadOutput(LinkedHashMap<String, Object> map) {
         LinkDownloadOutput output = new LinkDownloadOutput();
         output.setOriginUrl((String) map.get("orig_url"));

@@ -35,32 +35,6 @@ public class KafkaTopicConfig {
         return new KafkaAdmin(configs);
     }
 
-
-//    @Bean
-//    public NewTopic predictionInitTopic() {
-//        return new NewTopic("predictionInitTopic", 1, (short) 1);
-//    }
-//
-//    @Bean
-//    public NewTopic predictionNERTopic() {
-//        return new NewTopic("predictionNERTopic", 1, (short) 1);
-//    }
-//
-//    @Bean
-//    public NewTopic basePredictionTopic() {
-//        return new NewTopic("basePredictionTopic", 1, (short) 1);
-//    }
-//
-//    @Bean
-//    public NewTopic linkTopic() {
-//        return new NewTopic("linkTopic", 1, (short) 1);
-//    }
-//
-//    @Bean
-//    public NewTopic finalPredictionTopic() {
-//        return new NewTopic("finalPredictionTopic", 1, (short) 1);
-//    }
-
     @Bean
     public NewTopic predictionTopic() {
         return new NewTopic(this.predictionTopic, 1, (short) 1);

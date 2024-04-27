@@ -143,8 +143,6 @@ services:
 volumes:
   aass_db_data:
     name: aass_db_data
-  aass_camunda_data:
-    name: aass_camunda_data
 
 networks:
   default:
