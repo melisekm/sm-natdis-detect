@@ -5,3 +5,4 @@ requests
 git+https://github.com/kinit-sk/newspaper@master#egg=newspaper3k
 beautifulsoup4
 urlextract
+aiokafka

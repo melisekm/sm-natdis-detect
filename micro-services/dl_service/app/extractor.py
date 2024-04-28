@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 import requests
 from bs4 import BeautifulSoup
+from dateutil.parser import parse
 from newspaper import Article as NewspaperArticle
 from urlextract import URLExtract
 
@@ -87,12 +88,17 @@ class NewspaperExtractor:
                 return ExtractionError(url=url, description="Unable to transform Article.", exception=str(exception))
             logging.debug(f"Parsing Article. URL: {url}")
 
+            published_at = random_date().strftime("%Y-%m-%d %H:%M:%S+00:00")
+            try:
+                published_at = parse(str(parsed_article.publish_date)).strftime("%Y-%m-%d %H:%M:%S+00:00")
+            except Exception as exception:
+                logging.error(f"Could not parse publish date. URL: {url}. Exception: {exception}")
 
             article = ExtractionResult(
                 orig_url=url,
                 final_url=download_result.final_url,
                 extracted_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S+00:00"),
-                published_at=str(parsed_article.publish_date) if parsed_article.publish_date else random_date().strftime("%Y-%m-%d %H:%M:%S+00:00"),
+                published_at=published_at,
                 title=parsed_article.title,
                 text=parsed_article.text,
                 html=parsed_article.article_html,
@@ -170,6 +176,6 @@ def get_final_url(response: requests.Response) -> str:
 
 # Mock random date
 def random_date():
-    start = datetime.now() - timedelta(days=10*365)
+    start = datetime.now() - timedelta(days=10 * 365)
     end = datetime.now()
     return start + timedelta(seconds=random.randint(0, int((end - start).total_seconds())))

@@ -1,5 +1,8 @@
 import datetime
 import logging
+
+from confluent_kafka import Producer
+
 from typing import Literal
 
 import requests
@@ -20,7 +23,9 @@ class UnauthorizedError(Exception):
 class APIClient:
     def __init__(self):
         self.api_host = settings.API_HOST
+        self.kafka_prediction_topic = settings.KAFKA_PREDICTION_TOPIC
         self.api_properties = APIProperties(self.api_host)
+        self.kafka_producer = Producer({'bootstrap.servers': settings.KAFKA_URI})
         self.token = None
         self.token_expiration = None
         self.user = None
@@ -58,9 +63,9 @@ class APIClient:
             params=params
         )
 
-    def predict(self, text: str) -> PredictionResponse | None:
+    def predict_microservices(self, text: str) -> PredictionResponse | None:
         r = self.make_base_post_request(
-            self.api_properties.create_prediction_url(),
+            self.api_properties.create_prediction_url('microservices'),
             data=text
         )
         r.raise_for_status()
@@ -70,6 +75,28 @@ class APIClient:
         )
         r.raise_for_status()
         return PredictionResponse(**r.json())
+
+    def predict_camunda(self, text: str) -> None:
+        r = self.make_base_post_request(
+            self.api_properties.create_prediction_url('camunda'),
+            json={
+                "variableList": [
+                    {
+                        "name": "text",
+                        "value": text,
+                    },
+                    {
+                        "name": "token",
+                        "value": self.get_authorization_token(),
+                    }
+                ]
+            }
+        )
+        r.raise_for_status()
+
+    def predict_kafka(self, text: str) -> None:
+        self.kafka_producer.produce(self.kafka_prediction_topic, text)
+        self.kafka_producer.flush()
 
     def rate_prediction(self, prediction_id: int, rating: Literal['true', 'false']):
         r = self.make_base_post_request(

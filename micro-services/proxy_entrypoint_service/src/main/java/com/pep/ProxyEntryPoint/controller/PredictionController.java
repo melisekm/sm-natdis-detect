@@ -106,13 +106,4 @@ public class PredictionController extends AbstractController<PredictionInput, Pr
             throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
         }
     }
-
-    @Override
-    public void sendPredictionToKafka(String input) {
-        try {
-            predictionService.sendPredictionToKafka(input);
-        } catch (Exception e) {
-            throw new DefaultException(HttpStatus.INTERNAL_SERVER_ERROR, getErrorEntityUpdate(), e);
-        }
-    }
 }

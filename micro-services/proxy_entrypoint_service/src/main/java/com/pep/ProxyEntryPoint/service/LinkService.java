@@ -128,24 +128,29 @@ public class LinkService extends AbstractService<LinkInput, LinkOutput, Link, Lo
         List<LinkDownloadOutput> outputList = new ArrayList<>();
 
         for (LinkedHashMap<String, Object> map : linkedHashMapList) {
-            LinkDownloadOutput output = new LinkDownloadOutput();
-            output.setOriginUrl((String) map.get("orig_url"));
-            output.setFinalUrl((String) map.get("final_url"));
-            output.setText((String) map.get("text"));
-            output.setHtml((String) map.get("html"));
-            output.setTitle((String) map.get("title"));
-            output.setOtherInfo((Map<String, Object>) map.get("other_info"));
-            output.setDomain((String) map.get("domain"));
-            output.setPublishedAt(parseDateTime((String) map.get("published_at")));
-            try {
-                output.setExtractedAt(parseDateTime((String) map.get("extracted_at")));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            LinkDownloadOutput output = convertSingleLinkDownloadOutput(map);
             outputList.add(output);
         }
 
         return outputList;
+    }
+
+    public LinkDownloadOutput convertSingleLinkDownloadOutput(LinkedHashMap<String, Object> map) {
+        LinkDownloadOutput output = new LinkDownloadOutput();
+        output.setOriginUrl((String) map.get("orig_url"));
+        output.setFinalUrl((String) map.get("final_url"));
+        output.setText((String) map.get("text"));
+        output.setHtml((String) map.get("html"));
+        output.setTitle((String) map.get("title"));
+        output.setOtherInfo((Map<String, Object>) map.get("other_info"));
+        output.setDomain((String) map.get("domain"));
+        output.setPublishedAt(parseDateTime((String) map.get("published_at")));
+        try {
+            output.setExtractedAt(parseDateTime((String) map.get("extracted_at")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return output;
     }
 
     public LocalDateTime parseDateTime(String dateTimeString) {

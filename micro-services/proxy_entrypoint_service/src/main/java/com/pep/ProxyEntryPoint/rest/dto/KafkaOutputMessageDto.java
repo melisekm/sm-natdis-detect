@@ -7,10 +7,12 @@ import lombok.experimental.SuperBuilder;
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class KafkaDto {
+public class KafkaOutputMessageDto {
 
     private Long predictionId;
-
+    private Long linkId;
     private DataInput dataInput;
 
 }
+
+

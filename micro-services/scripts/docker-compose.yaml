@@ -1,5 +1,14 @@
-services:
+x-aass-common:
+  &aass-common
+  environment:
+    &aass-common-env
+    KAFKA_URI: ${KAFKA_URI:-natdis-kafka:29092}
+    KAFKA_PREDICTION_TOPIC: ${KAFKA_PREDICTION_TOPIC:-predictionTopic}
+    KAFKA_NER_TOPIC: ${KAFKA_NER_TOPIC:-NERTopic}
+    KAFKA_LINK_TOPIC: ${KAFKA_LINK_TOPIC:-linkTopic}
+    KAFKA_DB_TOPIC: ${KAFKA_DB_TOPIC:-dbObjectsTopic}
 
+services:
   # ENTRYPOINT API SERVICE
   app:
     container_name: proxy-entrypoint-service
@@ -7,13 +16,15 @@ services:
       context: ../proxy_entrypoint_service
       dockerfile: Dockerfile
     environment:
-      - SERVER_PORT=8080
-      - DATASOURCE_USER=${POSTGRES_USER:-postgres}
-      - DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-root}
-      - DATASOURCE_URL=jdbc:postgresql://proxy_entrypoint_db:5432/${POSTGRES_DB:-aass}
-      - PREDICT_SERVICE_URI=${PREDICT_SERVICE_URI:-http://predict_service:8000}
-      - NER_SERVICE_URI=${NER_SERVICE_URI:-http://ner_service:8000}
-      - DL_SERVICE_URI=${DL_SERVICE_URI:-http://dl_service:8000}
+      <<: *aass-common-env
+      SERVER_PORT: 8080
+      DATASOURCE_USER: ${POSTGRES_USER:-postgres}
+      DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-root}
+      DATASOURCE_URL: jdbc:postgresql://proxy_entrypoint_db:5432/${POSTGRES_DB:-aass}
+      PREDICT_SERVICE_URI: ${PREDICT_SERVICE_URI:-http://predict_service:8000}
+      NER_SERVICE_URI: ${NER_SERVICE_URI:-http://ner_service:8000}
+      DL_SERVICE_URI: ${DL_SERVICE_URI:-http://dl_service:8000}
+      CAMUNDA_URI: ${CAMUNDA_URI:-http://natdis-camunda:8080/engine-rest}
     ports:
       - ${ENTRYPOINT_PORT_EXPOSE:-8080}:8080
     depends_on:
@@ -40,6 +51,8 @@ services:
       - ${PREDICT_SERVICE_PORT_EXPOSE:-8010}:8000
     env_file:
       - .predict_env
+    environment:
+      <<: *aass-common-env
     volumes:
       - ../predict_service:/workspace
 
@@ -52,6 +65,8 @@ services:
       - ${NER_SERVICE_PORT_EXPOSE:-8011}:8000
     env_file:
       - .ner_env
+    environment:
+      <<: *aass-common-env
     volumes:
       - ../ner_service:/workspace
 
@@ -60,6 +75,8 @@ services:
     build:
       context: ../dl_service
       dockerfile: Dockerfile
+    environment:
+      <<: *aass-common-env
     ports:
       - ${DL_SERVICE_PORT_EXPOSE:-8012}:8000
     volumes:
@@ -72,15 +89,56 @@ services:
       context: ../../natdis-detect-fe/natdis
       dockerfile: Dockerfile
     environment:
-      - TZ=Europe/Bratislava
-      - API_HOST=${DJANGO_API_HOST:-http://proxy-entrypoint-service:8080}
-      - KEYCLOAK_AUTH_URL=${KEYCLOAK_AUTH_URL}
-      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
-      - KEYCLOAK_GRANT_TYPE=${KEYCLOAK_GRANT_TYPE}
+      <<: *aass-common-env
+      TZ: Europe/Bratislava
+      API_HOST: ${DJANGO_API_HOST:-http://proxy-entrypoint-service:8080}
+      KEYCLOAK_AUTH_URL: ${KEYCLOAK_AUTH_URL}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_GRANT_TYPE: ${KEYCLOAK_GRANT_TYPE}
     ports:
       - ${DJANGO_PORT_EXPOSE:-8180}:8000
     volumes:
       - "../../natdis-detect-fe/natdis/dcesm:/code/dcesm"
+
+  # CAMUNDA
+  camunda:
+    container_name: natdis-camunda
+    image: camunda/camunda-bpm-platform:run-latest
+    ports:
+      - ${CAMUNDA_PORT_EXPOSE:-8081}:8080
+
+  # KAFKA
+  kafka:
+    image: obsidiandynamics/kafka
+    container_name: natdis-kafka
+    restart: "no"
+    ports:
+      - "2181:2181"
+      - "9093:9093"
+    environment:
+      KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9093"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+    healthcheck:
+      test: nc -z localhost 29092 || exit
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: natdis-kafka-ui
+    ports:
+      - "8090:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=natdis-kafka:29092
 
 volumes:
   aass_db_data:

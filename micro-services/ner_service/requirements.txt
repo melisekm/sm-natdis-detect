@@ -4,3 +4,4 @@ uvicorn
 spacy
 transformers
 spacy-transformers
+aiokafka

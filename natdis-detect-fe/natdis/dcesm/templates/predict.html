@@ -2,8 +2,16 @@
 
 {% block content %}
     <h1 class="my-3">Create prediction</h1>
+    <p>Enter the text of the social media post you want to predict the engagement of.</p>
+    <div>
+        <p>Some good examples:</p>
+        <ul>
+            <li>15m flood peak for Ipswich at 6pm tonight | Ipswich Queensland Times http://t.co/1GjdNtSm</li>
+            <li>#Australia Brisbane expected to flood http://t.co/k7vIyG9e</li>
+        </ul>
+    </div>
     <form method="POST" action="">
-        <div class="row ">
+        <div class="row">
             <div class="col">
                 {% csrf_token %}
                 <label for="SocialMediaPost" class="fs-4 form-label mt-md-0 mt-3">Social Media Post Text</label>
@@ -13,7 +21,13 @@
         </div>
         <div class="row">
             <div class="col mt-3 text-center">
-                <button id='submit' class="btn w-25 btn-blue">Submit</button>
+                <button id='submit' class="btn btn-blue" name="microservices">Predict with REST API - MICROSERVICES</button>
+            </div>
+            <div class="col mt-3 text-center">
+                <button id='submit' class="btn btn-warning" name="camunda">Predict with BUSINESS PROCESS - CAMUNDA</button>
+            </div>
+            <div class="col mt-3 text-center">
+                <button id='submit' class="btn btn-info" name="kafka">Predict with EVENT DRIVEN - KAFKA</button>
             </div>
         </div>
     </form>
@@ -30,6 +44,9 @@
     <script>
         $(document).ready(function () {
             $("#submit").click(function () {
+                if ($("#SocialMediaPost").val() === "") {
+                    return true;
+                }
                 $("#overlay").fadeIn(300);
             });
         });

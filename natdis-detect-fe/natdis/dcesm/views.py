@@ -71,6 +71,19 @@ class CreatePrediction(ViewWithAPIClient):
     def get(self, request):
         return render(request, 'predict.html')
 
+    def predict_with_microservices(self, request, text: str):
+        prediction = self.api_client.predict_microservices(text)
+        return render(
+            request, 'predict.html',
+            {'prediction': transform_prediction(prediction), 'text': text, 'detailed': False}
+        )
+
+    def predict_async(self, request, text: str, predict_fn):
+        next_id = self.api_client.get_predictions()[-1].id + 1
+        predict_fn(text)
+        messages.info(request, f'Prediction has been scheduled. Please check back later. ID: {next_id}')
+        return redirect('predictions')
+
     def post(self, request):
         text = request.POST['SocialMediaPost']
         if isinstance(text, str):
@@ -79,16 +92,16 @@ class CreatePrediction(ViewWithAPIClient):
             messages.error(request, 'Please enter a text to predict.')
             return render(request, 'predict.html')
         try:
-            prediction = self.api_client.predict(text)
+            if 'microservices' in request.POST:
+                return self.predict_with_microservices(request, text)
+            if 'camunda' in request.POST:
+                return self.predict_async(request, text, self.api_client.predict_camunda)
+            if 'kafka' in request.POST:
+                return self.predict_async(request, text, self.api_client.predict_kafka)
         except Exception as e:
             logging.exception(e)
             messages.error(request, 'Failed to make prediction. Please try again later.')
             return render(request, 'predict.html', {'text': text})
-
-        return render(
-            request, 'predict.html',
-            {'prediction': transform_prediction(prediction), 'text': text, 'detailed': False}
-        )
 
 
 class PredictionDetail(ViewWithAPIClient):
