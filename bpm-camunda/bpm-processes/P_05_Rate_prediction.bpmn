@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_071g1eb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.14.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_071g1eb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.21.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
   <bpmn:collaboration id="Collaboration_1uk1ded">
     <bpmn:participant id="Participant_0pc47qq" name="SM-NATDIS-DETECT" processRef="RatePrediction" />
   </bpmn:collaboration>
@@ -32,17 +32,11 @@
             <camunda:inputParameter name="headers">
               <camunda:map>
                 <camunda:entry key="Content-Type">application/json</camunda:entry>
-                <camunda:entry key="Authorization">Bearer ${token.prop("token").stringValue()}</camunda:entry>
+                <camunda:entry key="Authorization">Bearer ${token}</camunda:entry>
               </camunda:map>
             </camunda:inputParameter>
             <camunda:inputParameter name="method">POST</camunda:inputParameter>
-            <camunda:inputParameter name="url">${SPIS_INT_API_URL}/cislaPodnikov/naplnenieCiselnejMnoziny</camunda:inputParameter>
-            <camunda:inputParameter name="payload">{
-  "processInstanceId": "${execution.processInstanceId}",
-  "cislaPodnikovIds": "${cislaPodnikovIds}",
-  "kodSablony": "SAB_SS_OSČ_09"
-}</camunda:inputParameter>
-            <camunda:outputParameter name="restResponse">#{response}</camunda:outputParameter>
+            <camunda:inputParameter name="url">${pepUrl}/prediction/${predictionId}/rate/${rating}</camunda:inputParameter>
             <camunda:outputParameter name="statusCode">#{statusCode}</camunda:outputParameter>
           </camunda:inputOutput>
           <camunda:connectorId>http-connector</camunda:connectorId>
