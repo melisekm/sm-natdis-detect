@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_071g1eb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.14.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_071g1eb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.21.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
   <bpmn:collaboration id="Collaboration_1uk1ded">
     <bpmn:participant id="Participant_0pc47qq" name="SM-NATDIS-DETECT" processRef="PredictionMainFlow" />
   </bpmn:collaboration>
@@ -32,7 +32,7 @@
         </bpmn:childLaneSet>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:exclusiveGateway id="Gateway_1gvvzly" name="Are entities present?" default="Flow_19ynqby">
+    <bpmn:exclusiveGateway id="Gateway_1gvvzly" name="Are entities present?" default="Flow_1wkpslh">
       <bpmn:incoming>Flow_0heaxms</bpmn:incoming>
       <bpmn:outgoing>Flow_1wkpslh</bpmn:outgoing>
       <bpmn:outgoing>Flow_19ynqby</bpmn:outgoing>
@@ -122,10 +122,10 @@
       </bpmn:messageEventDefinition>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0heaxms" sourceRef="Activity_0ochenw" targetRef="Gateway_1gvvzly" />
-    <bpmn:sequenceFlow id="Flow_1wkpslh" name="No" sourceRef="Gateway_1gvvzly" targetRef="Event_02oxdco">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${entities == 0}</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="Flow_1wkpslh" name="No" sourceRef="Gateway_1gvvzly" targetRef="Event_02oxdco" />
+    <bpmn:sequenceFlow id="Flow_19ynqby" name="Yes" sourceRef="Gateway_1gvvzly" targetRef="Activity_0tauhtq">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${informative}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_19ynqby" name="Yes" sourceRef="Gateway_1gvvzly" targetRef="Activity_0tauhtq" />
     <bpmn:sequenceFlow id="Flow_0bzb2mc" sourceRef="Activity_0tauhtq" targetRef="Gateway_0gssy4d" />
     <bpmn:sequenceFlow id="Flow_07rtu82" sourceRef="Event_17yzurg" targetRef="Activity_0ochenw" />
     <bpmn:sequenceFlow id="Flow_1i6p5yl" name="No" sourceRef="Gateway_0gssy4d" targetRef="Event_0iky8et" />
@@ -151,10 +151,6 @@
         <dc:Bounds x="160" y="80" width="1560" height="520" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_0xc4ref_di" bpmnElement="Lane_0xc4ref" isHorizontal="true">
-        <dc:Bounds x="190" y="380" width="1530" height="220" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0y1ta0b" bpmnElement="Lane_17qo38y" isHorizontal="true">
         <dc:Bounds x="190" y="80" width="1530" height="300" />
         <bpmndi:BPMNLabel />
@@ -162,12 +158,8 @@
       <bpmndi:BPMNShape id="Lane_0ylq0gp_di" bpmnElement="Lane_0ylq0gp" isHorizontal="true">
         <dc:Bounds x="220" y="80" width="1500" height="520" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1qfvsd9_di" bpmnElement="TextAnnotation_1qfvsd9">
-        <dc:Bounds x="860" y="130" width="100" height="41" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0nejpue_di" bpmnElement="TextAnnotation_0nejpue">
-        <dc:Bounds x="1270" y="140" width="100" height="41" />
+      <bpmndi:BPMNShape id="Lane_0xc4ref_di" bpmnElement="Lane_0xc4ref" isHorizontal="true">
+        <dc:Bounds x="190" y="380" width="1530" height="220" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1gvvzly_di" bpmnElement="Gateway_1gvvzly" isMarkerVisible="true">
@@ -218,14 +210,14 @@
           <dc:Bounds x="1500" y="283" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_147g391_di" bpmnElement="Association_147g391">
-        <di:waypoint x="890" y="220" />
-        <di:waypoint x="903" y="171" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0lwm4yq_di" bpmnElement="Association_0lwm4yq">
-        <di:waypoint x="1310" y="181" />
-        <di:waypoint x="1290" y="220" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_1qfvsd9_di" bpmnElement="TextAnnotation_1qfvsd9">
+        <dc:Bounds x="860" y="130" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0nejpue_di" bpmnElement="TextAnnotation_0nejpue">
+        <dc:Bounds x="1270" y="140" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0heaxms_di" bpmnElement="Flow_0heaxms">
         <di:waypoint x="530" y="260" />
         <di:waypoint x="695" y="260" />
@@ -266,6 +258,14 @@
       <bpmndi:BPMNEdge id="Flow_0y4u07e_di" bpmnElement="Flow_0y4u07e">
         <di:waypoint x="1300" y="260" />
         <di:waypoint x="1492" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_147g391_di" bpmnElement="Association_147g391">
+        <di:waypoint x="890" y="220" />
+        <di:waypoint x="903" y="171" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0lwm4yq_di" bpmnElement="Association_0lwm4yq">
+        <di:waypoint x="1310" y="181" />
+        <di:waypoint x="1290" y="220" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
