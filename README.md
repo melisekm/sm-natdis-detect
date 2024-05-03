@@ -86,7 +86,7 @@ docker compose up -d
 Access the frontend on `http://localhost:8180`
 
 #### Frontend Standalone - Optional
-See [Frontend README](natdis-detect-fe/README.md)
+See [Frontend README](natdis-detect-fe/readme.md)
 
 #### Entry Point Standalone - Optional
 See [Entry Point README](micro-services/proxy_entrypoint_service/README.md)
