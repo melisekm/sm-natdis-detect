@@ -2,6 +2,9 @@
 
 AASS FIIT 2024
 
+## Showcase
+![Showcase](assets/showcase.gif)
+
 ## Overview
 ![API DIAGRAM](assets/api_diagram.png)
 
