@@ -3,10 +3,13 @@
 AASS FIIT 2024
 
 ## Showcase
+![GUI](assets/gui.png)
+### Prediction with entities and link to an article
 ![Showcase](assets/showcase.gif)
 
 ## Overview
 ![API DIAGRAM](assets/api_diagram.png)
+
 
 ## Setup
 Create docker network
