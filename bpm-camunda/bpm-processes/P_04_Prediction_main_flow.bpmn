@@ -5,7 +5,6 @@
   </bpmn:collaboration>
   <bpmn:process id="PredictionMainFlow" name="P_04_Prediction_main_flow" isExecutable="true" camunda:historyTimeToLive="1">
     <bpmn:laneSet id="LaneSet_0qsm96e">
-      <bpmn:lane id="Lane_0xc4ref" name="User FE" />
       <bpmn:lane id="Lane_17qo38y" name="Proxy endpoint">
         <bpmn:flowNodeRef>Gateway_1gvvzly</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_02oxdco</bpmn:flowNodeRef>
@@ -16,79 +15,21 @@
         <bpmn:flowNodeRef>Event_0iky8et</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_03eaepe</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_0ogbi7l</bpmn:flowNodeRef>
-        <bpmn:childLaneSet id="LaneSet_00kei9h">
-          <bpmn:lane id="Lane_0ylq0gp">
-            <bpmn:flowNodeRef>Gateway_1gvvzly</bpmn:flowNodeRef>
-            <bpmn:flowNodeRef>Event_02oxdco</bpmn:flowNodeRef>
-            <bpmn:flowNodeRef>Activity_0tauhtq</bpmn:flowNodeRef>
-            <bpmn:flowNodeRef>Event_17yzurg</bpmn:flowNodeRef>
-            <bpmn:flowNodeRef>Activity_0ochenw</bpmn:flowNodeRef>
-            <bpmn:flowNodeRef>Gateway_0gssy4d</bpmn:flowNodeRef>
-            <bpmn:flowNodeRef>Event_0iky8et</bpmn:flowNodeRef>
-            <bpmn:flowNodeRef>Activity_03eaepe</bpmn:flowNodeRef>
-            <bpmn:flowNodeRef>Event_0ogbi7l</bpmn:flowNodeRef>
-            <bpmn:childLaneSet id="LaneSet_08mhyz6" />
-          </bpmn:lane>
-        </bpmn:childLaneSet>
+        <bpmn:childLaneSet id="LaneSet_00kei9h" />
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:exclusiveGateway id="Gateway_1gvvzly" name="Are entities present?" default="Flow_1wkpslh">
-      <bpmn:incoming>Flow_0heaxms</bpmn:incoming>
-      <bpmn:outgoing>Flow_1wkpslh</bpmn:outgoing>
-      <bpmn:outgoing>Flow_19ynqby</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="Event_02oxdco" name="End">
-      <bpmn:incoming>Flow_1wkpslh</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:callActivity id="Activity_0tauhtq" name="P_03 Link processing" camunda:asyncBefore="true" calledElement="LinkProcessing">
-      <bpmn:documentation>Upravi sa aby sa dala pridat priloha</bpmn:documentation>
-      <bpmn:extensionElements>
-        <camunda:inputOutput>
-          <camunda:inputParameter name="startEvent">linkRecieving</camunda:inputParameter>
-        </camunda:inputOutput>
-        <camunda:in variables="all" />
-        <camunda:out variables="all" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_19ynqby</bpmn:incoming>
-      <bpmn:outgoing>Flow_0bzb2mc</bpmn:outgoing>
-    </bpmn:callActivity>
-    <bpmn:startEvent id="Event_17yzurg" name="Start">
-      <bpmn:extensionElements>
-        <camunda:executionListener event="end">
-          <camunda:script scriptFormat="javascript" />
-        </camunda:executionListener>
-      </bpmn:extensionElements>
-      <bpmn:outgoing>Flow_07rtu82</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:callActivity id="Activity_0ochenw" name="P_01 Prediction initialization" camunda:asyncBefore="true" calledElement="PredictionInit">
-      <bpmn:documentation>Upravi sa aby sa dala pridat priloha</bpmn:documentation>
-      <bpmn:extensionElements>
-        <camunda:in variables="all" />
-        <camunda:out variables="all" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_07rtu82</bpmn:incoming>
-      <bpmn:outgoing>Flow_0heaxms</bpmn:outgoing>
-    </bpmn:callActivity>
-    <bpmn:exclusiveGateway id="Gateway_0gssy4d" name="Are links present?" default="Flow_1i6p5yl">
-      <bpmn:incoming>Flow_0bzb2mc</bpmn:incoming>
-      <bpmn:outgoing>Flow_1i6p5yl</bpmn:outgoing>
-      <bpmn:outgoing>Flow_1j8uf26</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="Event_0iky8et" name="End">
-      <bpmn:incoming>Flow_1i6p5yl</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:callActivity id="Activity_03eaepe" name="P_03 Link processing" camunda:asyncBefore="true" calledElement="LinkProcessing">
-      <bpmn:documentation>Upravi sa aby sa dala pridat priloha</bpmn:documentation>
-      <bpmn:extensionElements>
-        <camunda:inputOutput>
-          <camunda:inputParameter name="startEvent">linkSaving</camunda:inputParameter>
-        </camunda:inputOutput>
-        <camunda:in variables="all" />
-        <camunda:out variables="all" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1j8uf26</bpmn:incoming>
-      <bpmn:outgoing>Flow_0y4u07e</bpmn:outgoing>
-    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0y4u07e" sourceRef="Activity_03eaepe" targetRef="Event_0ogbi7l" />
+    <bpmn:sequenceFlow id="Flow_1j8uf26" sourceRef="Gateway_0gssy4d" targetRef="Activity_03eaepe">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${linkCount != 0}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1i6p5yl" name="No" sourceRef="Gateway_0gssy4d" targetRef="Event_0iky8et" />
+    <bpmn:sequenceFlow id="Flow_07rtu82" sourceRef="Event_17yzurg" targetRef="Activity_0ochenw" />
+    <bpmn:sequenceFlow id="Flow_0bzb2mc" sourceRef="Activity_0tauhtq" targetRef="Gateway_0gssy4d" />
+    <bpmn:sequenceFlow id="Flow_19ynqby" name="Yes" sourceRef="Gateway_1gvvzly" targetRef="Activity_0tauhtq">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${informative}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1wkpslh" name="No" sourceRef="Gateway_1gvvzly" targetRef="Event_02oxdco" />
+    <bpmn:sequenceFlow id="Flow_0heaxms" sourceRef="Activity_0ochenw" targetRef="Gateway_1gvvzly" />
     <bpmn:endEvent id="Event_0ogbi7l" name="End" camunda:asyncBefore="true">
       <bpmn:incoming>Flow_0y4u07e</bpmn:incoming>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1mkdi6j" messageRef="Message_1mtist1">
@@ -121,26 +62,71 @@
         </bpmn:extensionElements>
       </bpmn:messageEventDefinition>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0heaxms" sourceRef="Activity_0ochenw" targetRef="Gateway_1gvvzly" />
-    <bpmn:sequenceFlow id="Flow_1wkpslh" name="No" sourceRef="Gateway_1gvvzly" targetRef="Event_02oxdco" />
-    <bpmn:sequenceFlow id="Flow_19ynqby" name="Yes" sourceRef="Gateway_1gvvzly" targetRef="Activity_0tauhtq">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${informative}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0bzb2mc" sourceRef="Activity_0tauhtq" targetRef="Gateway_0gssy4d" />
-    <bpmn:sequenceFlow id="Flow_07rtu82" sourceRef="Event_17yzurg" targetRef="Activity_0ochenw" />
-    <bpmn:sequenceFlow id="Flow_1i6p5yl" name="No" sourceRef="Gateway_0gssy4d" targetRef="Event_0iky8et" />
-    <bpmn:sequenceFlow id="Flow_1j8uf26" sourceRef="Gateway_0gssy4d" targetRef="Activity_03eaepe">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${linkCount != 0}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0y4u07e" sourceRef="Activity_03eaepe" targetRef="Event_0ogbi7l" />
-    <bpmn:textAnnotation id="TextAnnotation_1qfvsd9">
-      <bpmn:text>startEvent = linkRecieving</bpmn:text>
-    </bpmn:textAnnotation>
+    <bpmn:callActivity id="Activity_03eaepe" name="P_03 Link processing" camunda:asyncBefore="true" calledElement="LinkProcessing">
+      <bpmn:documentation>Upravi sa aby sa dala pridat priloha</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="startEvent">linkSaving</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1j8uf26</bpmn:incoming>
+      <bpmn:outgoing>Flow_0y4u07e</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="Event_0iky8et" name="End">
+      <bpmn:incoming>Flow_1i6p5yl</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_0gssy4d" name="Are links present?" default="Flow_1i6p5yl">
+      <bpmn:incoming>Flow_0bzb2mc</bpmn:incoming>
+      <bpmn:outgoing>Flow_1i6p5yl</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1j8uf26</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:callActivity id="Activity_0ochenw" name="P_01 Prediction initialization" camunda:asyncBefore="true" calledElement="PredictionInit">
+      <bpmn:documentation>Upravi sa aby sa dala pridat priloha</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_07rtu82</bpmn:incoming>
+      <bpmn:outgoing>Flow_0heaxms</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:startEvent id="Event_17yzurg" name="Start">
+      <bpmn:extensionElements>
+        <camunda:executionListener event="end">
+          <camunda:script scriptFormat="javascript" />
+        </camunda:executionListener>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_07rtu82</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:callActivity id="Activity_0tauhtq" name="P_03 Link processing" camunda:asyncBefore="true" calledElement="LinkProcessing">
+      <bpmn:documentation>Upravi sa aby sa dala pridat priloha</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="startEvent">linkRecieving</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_19ynqby</bpmn:incoming>
+      <bpmn:outgoing>Flow_0bzb2mc</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="Event_02oxdco" name="End">
+      <bpmn:incoming>Flow_1wkpslh</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_1gvvzly" name="Are entities present?" default="Flow_1wkpslh">
+      <bpmn:incoming>Flow_0heaxms</bpmn:incoming>
+      <bpmn:outgoing>Flow_1wkpslh</bpmn:outgoing>
+      <bpmn:outgoing>Flow_19ynqby</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
     <bpmn:textAnnotation id="TextAnnotation_0nejpue">
       <bpmn:text>startEvent = linkSaving</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_147g391" sourceRef="Activity_0tauhtq" targetRef="TextAnnotation_1qfvsd9" />
+    <bpmn:textAnnotation id="TextAnnotation_1qfvsd9">
+      <bpmn:text>startEvent = linkRecieving</bpmn:text>
+    </bpmn:textAnnotation>
     <bpmn:association id="Association_0lwm4yq" sourceRef="TextAnnotation_0nejpue" targetRef="Activity_03eaepe" />
+    <bpmn:association id="Association_147g391" sourceRef="Activity_0tauhtq" targetRef="TextAnnotation_1qfvsd9" />
   </bpmn:process>
   <bpmn:message id="Message_0v0f2h7" name="Message_0v0f2h7" />
   <bpmn:message id="Message_1pjkk9q" name="Message_1pjkk9q" />
@@ -148,18 +134,11 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1uk1ded">
       <bpmndi:BPMNShape id="BPMNShape_1qk9yab" bpmnElement="Participant_0pc47qq" isHorizontal="true">
-        <dc:Bounds x="160" y="80" width="1560" height="520" />
+        <dc:Bounds x="160" y="80" width="1560" height="290" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0y1ta0b" bpmnElement="Lane_17qo38y" isHorizontal="true">
-        <dc:Bounds x="190" y="80" width="1530" height="300" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_0ylq0gp_di" bpmnElement="Lane_0ylq0gp" isHorizontal="true">
-        <dc:Bounds x="220" y="80" width="1500" height="520" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_0xc4ref_di" bpmnElement="Lane_0xc4ref" isHorizontal="true">
-        <dc:Bounds x="190" y="380" width="1530" height="220" />
+        <dc:Bounds x="190" y="80" width="1530" height="290" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1gvvzly_di" bpmnElement="Gateway_1gvvzly" isMarkerVisible="true">
